@@ -193,17 +193,25 @@ function dCSS(){return`
 @page{margin:12mm;@bottom-center{content:"第 " counter(page) " 页";font-size:10pt;color:#666;font-family:'Noto Sans SC',sans-serif}}
 body{margin:0}
 img{max-width:100%}
+/* 打印页眉页脚 - 每页显示横线 */
+@media print{
+  .print-header,.print-footer{display:block!important;position:fixed;left:0;right:0;z-index:9999}
+  .print-header{top:0;border-bottom:1px solid #ccc;height:10px}
+  .print-footer{bottom:0;border-top:1px solid #ccc;height:10px}
+  body{padding-top:10px;padding-bottom:10px}
+}
+.print-header,.print-footer{display:none}
 .dc,.dm{page-break-after:avoid}
 .dc-s2,.dm-s2{page-break-before:avoid;page-break-after:avoid}
 .dc-t,.dm-t{page-break-after:avoid}
 .dc-ft,.dm-ft{page-break-before:avoid;page-break-after:avoid}
-.dc-kd,.dm-kd{page-break-inside:avoid}
-.dc-mb,.dm-mb{page-break-inside:avoid}
-.dc-bd,.dm-bd{page-break-inside:avoid}
+.dc-kd,.dm-kd{page-break-inside:avoid;break-inside:avoid}
+.dc-mb,.dm-mb{page-break-inside:avoid;break-inside:avoid}
+.dc-bd,.dm-bd{page-break-inside:avoid;break-inside:avoid}
 .dc-sn,.dm-sn{page-break-after:avoid}
-.dc-sb,.dm-sb{page-break-inside:avoid;border-top:1px solid #ddd}
+.dc-sb,.dm-sb{page-break-inside:avoid;break-inside:avoid;border-top:1px solid #ddd}
 .dc-sb:first-child,.dm-sb:first-child{border-top:none}
-.dc-sp,.dm-sp{page-break-inside:avoid;border:1.5px solid #bbb;border-radius:4px;overflow:hidden;margin-bottom:5px}
+.dc-sp,.dm-sp{page-break-inside:avoid;break-inside:avoid;border:1.5px solid #bbb;border-radius:4px;overflow:hidden;margin-bottom:5px}
 .dm-sp{border:1px solid #e0e0e0;border-radius:7px}
 .dc{padding:42px 48px;font-family:'SimSun','Noto Serif SC',serif;font-size:13.5px;line-height:1.9;color:#222;max-width:210mm;margin:0 auto}
 .dc-t{text-align:center;font-size:20px;font-weight:700;font-family:'Noto Serif SC','SimSun',serif;margin-bottom:6px;letter-spacing:1px}
@@ -262,6 +270,8 @@ function rClDoc(){
   const b=S.basic,m=S.macro,f=S.flow,s=S.sum,mm=matMap();
   const c=S.tpl==='classic'?'dc':'dm',h=[];
   h.push(`<div class="${c}">`);
+  h.push(`<div class="print-header"></div>`);
+  h.push(`<div class="print-footer"></div>`);
   h.push(`<div class="${c}-t">${e(b.title)||'教学设计'}</div>`);
   const sb=[];if(b.sub)sb.push(b.sub);if(b.grd)sb.push(b.grd);if(b.ct)sb.push(b.ct);if(b.dur)sb.push(b.dur);
   if(sb.length)h.push(`<div class="${c}-s">${sb.join(' · ')}</div>`);
@@ -298,6 +308,8 @@ function rMdDoc(){
   const b=S.basic,m=S.macro,f=S.flow,s=S.sum,mm=matMap();
   const h=[];
   h.push(`<div class="dm">`);
+  h.push(`<div class="print-header"></div>`);
+  h.push(`<div class="print-footer"></div>`);
   h.push(`<div class="dm-t">${e(b.title)||'教学设计'}</div>`);
   const sb=[];if(b.sub)sb.push(b.sub);if(b.grd)sb.push(b.grd);if(b.ct)sb.push(b.ct);if(b.dur)sb.push(b.dur);
   if(sb.length)h.push(`<div class="dm-s">${sb.join(' · ')}</div>`);

@@ -145,14 +145,17 @@ function rFlw(){const f=S.flow;return`<div style="max-width:780px"><p style="col
 
 function rBlk(si,bi,bk){
   if(bk.t==='a') return `<div class="blk blk-act"><div class="blk-hdr"><span class="blk-lbl">教学活动</span><button class="blk-del" onclick="rmB(${si},${bi})" title="删除此活动片段"><i class="fa-solid fa-xmark"></i></button></div><div class="tc">${TAGS.map(t=>`<button type="button" class="tch" onclick="insT(${si},${bi},'${t}')">${t.replace(/【|】/g,'')}</button>`).join('')}</div><textarea class="ft" data-f="flow.${si}.blocks.${bi}.x" style="min-height:110px" placeholder="【讲述】…&#10;【问题】…">${e(bk.x)}</textarea><div class="blk-ins"><button class="blk-ins-btn" onclick="addB(${si},${bi},'m')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入材料</button></div></div>`;
-  if(bk.t==='m') return `<div class="blk blk-mat"><div class="blk-hdr"><span class="blk-lbl mat">材料</span><button class="blk-del" onclick="rmB(${si},${bi})" title="删除此材料"><i class="fa-solid fa-xmark"></i></button></div><textarea class="mta" data-f="flow.${si}.blocks.${bi}.x" placeholder="输入材料内容（史料、文献等）…">${e(bk.x)}</textarea>${bk.img?`<div class="ipw"><img src="${bk.img}" alt="材料图片"><div class="ia"><button type="button" class="iab" onclick="trgI(${si},${bi})"><i class="fa-solid fa-arrows-rotate"></i> 更换</button><button type="button" class="iab d" onclick="rmI(${si},${bi})"><i class="fa-solid fa-trash-can"></i> 删除</button></div></div>`:`<button type="button" class="iub" onclick="trgI(${si},${bi})"><i class="fa-solid fa-image"></i> 上传图片</button>`}<input type="file" id="fi-${si}-${bi}" accept="image/*" style="display:none" onchange="hI(${si},${bi},this)"><div class="blk-ins"><button class="blk-ins-btn" onclick="addB(${si},${bi},'a')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入活动</button><button class="blk-ins-btn" onclick="addB(${si},${bi},'m')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入材料</button></div></div>`;
+  if(bk.t==='m') {
+    const algn=bk.al||'left';
+    return `<div class="blk blk-mat"><div class="blk-hdr"><span class="blk-lbl mat">材料</span><div style="display:flex;align-items:center;gap:6px"><button type="button" class="hb" style="padding:3px 8px;font-size:10.5px;border-radius:3px;height:auto" onclick="setAl(${si},${bi},'left')" title="左对齐"><i class="fa-solid fa-align-left" style="font-size:9px;color:${algn==='left'?'var(--acc)':'var(--tx3)'}"></i></button><button type="button" class="hb" style="padding:3px 8px;font-size:10.5px;border-radius:3px;height:auto" onclick="setAl(${si},${bi},'center')" title="居中对齐"><i class="fa-solid fa-align-center" style="font-size:9px;color:${algn==='center'?'var(--acc)':'var(--tx3)'}"></i></button><button type="button" class="hb" style="padding:3px 8px;font-size:10.5px;border-radius:3px;height:auto" onclick="setAl(${si},${bi},'right')" title="右对齐"><i class="fa-solid fa-align-right" style="font-size:9px;color:${algn==='right'?'var(--acc)':'var(--tx3)'}"></i></button><button class="blk-del" onclick="rmB(${si},${bi})" title="删除此材料"><i class="fa-solid fa-xmark"></i></button></div></div><textarea class="mta" data-f="flow.${si}.blocks.${bi}.x" placeholder="输入材料内容（史料、文献等）…">${e(bk.x)}</textarea>${bk.img?`<div class="ipw"><img src="${bk.img}" alt="材料图片"><div class="ia"><button type="button" class="iab" onclick="trgI(${si},${bi})"><i class="fa-solid fa-arrows-rotate"></i> 更换</button><button type="button" class="iab d" onclick="rmI(${si},${bi})"><i class="fa-solid fa-trash-can"></i> 删除</button></div></div>`:`<button type="button" class="iub" onclick="trgI(${si},${bi})"><i class="fa-solid fa-image"></i> 上传图片</button>`}<input type="file" id="fi-${si}-${bi}" accept="image/*" style="display:none" onchange="hI(${si},${bi},this)"><div class="blk-ins"><button class="blk-ins-btn" onclick="addB(${si},${bi},'a')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入活动</button><button class="blk-ins-btn" onclick="addB(${si},${bi},'m')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入材料</button></div></div>`;
+  }
   if(bk.t==='i') return `<div class="blk blk-int"><div class="blk-hdr"><span class="blk-lbl int">设计意图</span></div><textarea class="ft ita" data-f="flow.${si}.blocks.${bi}.x" placeholder="通过……引导学生……">${e(bk.x)}</textarea></div>`;
   return '';
 }
 
 function addF(){const n=S.flow.length;const nm=['导入新课','新知探究','深化理解','巩固练习','课堂小结','拓展延伸'];S.flow.push({name:n<nm.length?nm[n]:`环节${n+1}`,blocks:[{t:'a',x:''},{t:'i',x:''}]});rSt();aSv();setTimeout(()=>{const c=document.querySelectorAll('.fc');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'})},50)}
 function rmF(si){if(S.flow.length<=1){tst('至少保留一个环节','er');return}S.flow.splice(si,1);rSt();aSv()}
-function addB(si,bi,type){const nb=type==='m'?{t:'m',x:'',img:null}:{t:'a',x:''};S.flow[si].blocks.splice(bi+1,0,nb);rSt();aSv()}
+function addB(si,bi,type){const nb=type==='m'?{t:'m',x:'',img:null,al:'left'}:{t:'a',x:''};S.flow[si].blocks.splice(bi+1,0,nb);rSt();aSv()}
 function rmB(si,bi){const bk=S.flow[si].blocks[bi];if(bk.t==='i')return;const ac=S.flow[si].blocks.filter(b=>b.t==='a').length;if(bk.t==='a'&&ac<=1){tst('至少保留一个教学活动片段','er');return}S.flow[si].blocks.splice(bi,1);rSt();aSv()}
 function insT(si,bi,tag){const ta=document.querySelector(`[data-f="flow.${si}.blocks.${bi}.x"]`);if(!ta)return;const s=ta.selectionStart,en=ta.selectionStart,v=ta.value;const pf=(s>0&&v[s-1]!=='\n')?'\n':'';ta.value=v.substring(0,s)+pf+tag+v.substring(en);const np=s+pf.length+tag.length;ta.selectionStart=ta.selectionEnd=np;ta.focus();ta.dispatchEvent(new Event('input'))}
 
@@ -160,6 +163,7 @@ function insT(si,bi,tag){const ta=document.querySelector(`[data-f="flow.${si}.bl
 function trgI(si,bi){const inp=document.getElementById(`fi-${si}-${bi}`);if(inp)inp.click()}
 function hI(si,bi,inp){const file=inp.files[0];if(!file)return;if(file.size>10*1024*1024){tst('图片不能超过10MB','er');inp.value='';return}cmpI(file).then(b64=>{S.flow[si].blocks[bi].img=b64;rSt();aSv();tst('图片已添加','ok')}).catch(()=>tst('图片处理失败','er'));inp.value=''}
 function rmI(si,bi){S.flow[si].blocks[bi].img=null;rSt();aSv()}
+function setAl(si,bi,al){S.flow[si].blocks[bi].al=al;rSt();aSv()}
 function cmpI(file,mw=600,q=0.6){return new Promise(res=>{const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>mw){h=h*mw/w;w=mw}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',q))};img.onerror=()=>res(null);img.src=ev.target.result};r.readAsDataURL(file)})}
 function trgBI(){document.getElementById('gFI').click()}
 
@@ -176,8 +180,8 @@ function eB(s){if(!s)return '';return e(s).replace(/\n/g,'<br>')}
 
 /* 保存/加载 */
 function aSv(){clearTimeout(_st);_st=setTimeout(()=>{try{localStorage.setItem('jiaan_v2',JSON.stringify(S));const i=document.getElementById('asi');i.style.display='flex';setTimeout(()=>i.style.display='none',3000)}catch(err){tst('保存失败：存储空间可能已满','er')}},700)}
-function ldSt(){try{const r=localStorage.getItem('jiaan_v2');if(!r){ldOld();return}const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>({name:st.name||'',blocks:Array.isArray(st.blocks)?st.blocks.map(b=>{const nb={t:b.t||'a',x:b.x||''};if(b.t==='m')nb.img=b.img||null;return nb}):[{t:'a',x:''},{t:'i',x:''}]}))}if(s.sum){Object.assign(S.sum,s.sum);if(!('bi' in S.sum))S.sum.bi=null}if(s.tpl)S.tpl=s.tpl}catch(err){ldOld()}}
-function ldOld(){try{const r=localStorage.getItem('jiaan_data');if(!r)return;const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>{const blocks=[];if(st.teacher)blocks.push({t:'a',x:st.teacher});if(st.materials)st.materials.forEach(m=>{if(m.text||m.image)blocks.push({t:'m',x:m.text||'',img:m.image||null})});blocks.push({t:'i',x:st.intent||''});return{name:st.name||'',blocks}})}if(s.summary)Object.assign(S.sum,{con:s.summary.conclusion||'',hw:s.summary.homework||'',bd:s.summary.boardDesign||'',bi:null,ref:s.summary.reflection||''});localStorage.removeItem('jiaan_data');aSv()}catch(err){}}
+function ldSt(){try{const r=localStorage.getItem('jiaan_v2');if(!r){ldOld();return}const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>({name:st.name||'',blocks:Array.isArray(st.blocks)?st.blocks.map(b=>{const nb={t:b.t||'a',x:b.x||''};if(b.t==='m'){nb.img=b.img||null;if(b.al)nb.al=b.al}return nb}):[{t:'a',x:''},{t:'i',x:''}]}))}if(s.sum){Object.assign(S.sum,s.sum);if(!('bi' in S.sum))S.sum.bi=null}if(s.tpl)S.tpl=s.tpl}catch(err){ldOld()}}
+function ldOld(){try{const r=localStorage.getItem('jiaan_data');if(!r)return;const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>{const blocks=[];if(st.teacher)blocks.push({t:'a',x:st.teacher});if(st.materials)st.materials.forEach(m=>{if(m.text||m.image)blocks.push({t:'m',x:m.text||'',img:m.image||null,al:m.al||'left'})});blocks.push({t:'i',x:st.intent||''});return{name:st.name||'',blocks}})}if(s.summary)Object.assign(S.sum,{con:s.summary.conclusion||'',hw:s.summary.homework||'',bd:s.summary.boardDesign||'',bi:null,ref:s.summary.reflection||''});localStorage.removeItem('jiaan_data');aSv()}catch(err){}}
 function clrAll(){if(!confirm('确定清空所有内容？'))return;localStorage.removeItem('jiaan_v2');localStorage.removeItem('jiaan_data');S={tpl:'classic',cs:0,basic:{title:'',ct:'新授课',dur:'一课时',sub:'',grd:''},macro:{ti:'',ta:'',sa:'',obj:[''],kp:'',dp:'',mf:''},flow:[{name:'导入新课',blocks:[{t:'a',x:''},{t:'i',x:''}]}],sum:{con:'',hw:'',bd:'',bi:null,ref:''}};gS(0);tst('已重置','in')}
 
 /* 材料全局编号 */
@@ -220,8 +224,10 @@ img{max-width:100%}
 .dc-bl{font-size:11px;font-weight:700;color:#888;margin-bottom:3px;letter-spacing:1px}
 .dc-ib{background:#eaf2fb;border-left:3px solid #b4cceb;padding:5px 7px;border-radius:0 3px 3px 0;font-size:12.5px;line-height:1.7;color:#3a5a7c}
 .dc-mb{background:#faf8f4;border:1px solid #d6cdbf;border-radius:4px;padding:7px 9px;margin-bottom:5px}
+.dc-mb.txt-c{text-align:center}.dc-mb.txt-r{text-align:right}
 .dc-ml{font-size:12px;font-weight:700;color:#6b5f50;margin-bottom:3px;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif}
-.dc-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap;text-align:center}
+.dc-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap}
+.dc-mt.txt-c{text-align:center}.dc-mt.txt-r{text-align:right}
 .dc-mi{max-width:100%;margin-top:5px;border-radius:3px;display:block;margin-left:auto;margin-right:auto}
 .dc-bd{border:1.5px solid #ccc;padding:14px;margin-top:7px;min-height:50px;background:#fefefe;font-family:'KaiTi','STKaiti','Noto Serif SC',serif}
 .dc-bt{font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;font-family:'Noto Serif SC','SimSun',serif}
@@ -241,8 +247,10 @@ img{max-width:100%}
 .dm-bl{font-size:10.5px;font-weight:600;color:#9a8e7e;letter-spacing:2px;margin-bottom:4px}
 .dm-ib{background:#f0f4f0;border-left:3px solid #3d6b4f;padding:5px 7px;border-radius:0 4px 4px 0;font-size:12.5px;line-height:1.7;color:#4a6b52}
 .dm-mb{background:#faf8f5;border-left:3px solid #d6cdbf;border-radius:0 5px 5px 0;padding:7px 11px;margin-bottom:5px}
+.dm-mb.txt-c{text-align:center}.dm-mb.txt-r{text-align:right}
 .dm-ml{font-size:12px;font-weight:700;color:#6b5f50;margin-bottom:2px;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif}
-.dm-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap;text-align:center}
+.dm-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap}
+.dm-mt.txt-c{text-align:center}.dm-mt.txt-r{text-align:right}
 .dm-mi{max-width:100%;margin-top:5px;border-radius:4px;display:block;margin-left:auto;margin-right:auto}
 .dm-bd{border:2px solid #e0e0e0;border-radius:5px;padding:14px;margin-top:7px;min-height:50px;background:#fefefe;font-family:'KaiTi','STKaiti','Noto Serif SC',serif}
 .dm-bt{font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;font-family:'Noto Serif SC',serif}
@@ -275,7 +283,7 @@ function rClDoc(){
       h.push(`<div class="${c}-sp${bfPage}"><div class="${c}-sn">${e(lbl)}</div>`);
       st.blocks.forEach((bk,bi)=>{
         if(bk.t==='a'&&bk.x.trim()){h.push(`<div class="${c}-sb"><div class="${c}-bl">教学活动</div><div>${eB(bk.x)}</div></div>`)}
-        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){h.push(`<div class="${c}-sb"><div class="${c}-mb"><div class="${c}-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="${c}-mt">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="${c}-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
+        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){const algn=bk.al||'left';const alCls=algn==='center'?' txt-c':(algn==='right'?' txt-r':'');h.push(`<div class="${c}-sb"><div class="${c}-mb${alCls}"><div class="${c}-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="${c}-mt${alCls}">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="${c}-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
         if(bk.t==='i'&&bk.x.trim()){h.push(`<div class="${c}-sb"><div class="${c}-bl" style="color:#4a7db5">设计意图</div><div class="${c}-ib">${eB(bk.x)}</div></div>`)}
       });
       h.push(`</div>`);
@@ -311,7 +319,7 @@ function rMdDoc(){
       h.push(`<div class="dm-sp${bfPage}"><div class="dm-sn">${e(lbl)}</div>`);
       st.blocks.forEach((bk,bi)=>{
         if(bk.t==='a'&&bk.x.trim())h.push(`<div class="dm-sb"><div class="dm-bl">教学活动</div><div>${eB(bk.x)}</div></div>`);
-        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){h.push(`<div class="dm-sb"><div class="dm-mb"><div class="dm-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="dm-mt">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="dm-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
+        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){const algn=bk.al||'left';const alCls=algn==='center'?' txt-c':(algn==='right'?' txt-r':'');h.push(`<div class="dm-sb"><div class="dm-mb${alCls}"><div class="dm-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="dm-mt${alCls}">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="dm-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
         if(bk.t==='i'&&bk.x.trim())h.push(`<div class="dm-sb"><div class="dm-bl" style="color:#3d6b4f">设计意图</div><div class="dm-ib">${eB(bk.x)}</div></div>`);
       });
       h.push(`</div>`);
@@ -392,39 +400,39 @@ function loadEx(){
   S.flow=[
     {name:'课堂导入',blocks:[
       {t:'a',x:'【讲述】同学们好！本课内容是《从隋唐盛世到五代十国》，起止时间从581年到979年，前后近400年时间。公元581年，北周外戚杨坚代周称帝，改国号隋，定都长安。589年，隋灭陈，结束了南北长期分裂的局面。号称强盛的隋朝，只存在了短短37年。\n\n【问题】隋朝为什么和之前的秦朝一样，"其兴也勃，其亡也忽"呢？'},
-      {t:'m',x:'《汴河怀古》\n【唐】皮日休\n尽道隋亡为此河，至今千里赖通波。\n若无水殿龙舟事，共禹论功不较多。',img:null},
+      {t:'m',x:'《汴河怀古》\n【唐】皮日休\n尽道隋亡为此河，至今千里赖通波。\n若无水殿龙舟事，共禹论功不较多。',img:null,al:'left'},
       {t:'a',x:'【设问】诗中的"此河"指的是哪条河？\n\n是的，汴河，通称大运河。那么我们今天直接跟着大运河来走进本课的学习。'},
       {t:'i',x:'通过皮日休的《汴河怀古》引导学生得出"此河"即汴河，是隋朝大运河的一部分。再借助隋朝大运河，带领大家走进本课的学习，从而导入新课。'}
     ]},
     {name:'运河开，系隋朝兴亡',blocks:[
       {t:'a',x:'【设问】结合地图指出，大运河连接了哪些城市？为什么要连接这些城市？\n\n（学生思考，回答）\n\n【讲授】长安和洛阳是政治中心，余杭所在南方是经济中心，涿郡所在北方是军事中心。大运河将政治、经济、军事中心连接起来。'},
-      {t:'m',x:'▲隋朝大运河示意图',img:null},
+      {t:'m',x:'▲隋朝大运河示意图',img:null,al:'left'},
       {t:'a',x:'【问题】结合书本与刚刚所讲，谈谈你对"共禹论功不较多"的理解。\n\n（学生思考，回答）\n\n【讲授】在政治上，贯通东西、南北巩固统治。经济上，形成贯通南北的运输网络，促进南北经济交流以及运河沿岸的城市发展。'},
-      {t:'m',x:'（大业元年）辛亥，发河南诸郡男女百余万，开通济渠，自西苑引谷、洛水达于河，自板渚引河通于淮。\n——魏征等《隋书》',img:null},
+      {t:'m',x:'（大业元年）辛亥，发河南诸郡男女百余万，开通济渠，自西苑引谷、洛水达于河，自板渚引河通于淮。\n——魏征等《隋书》',img:null,al:'left'},
       {t:'a',x:'【过渡】再回到皮日休的诗，"若无水殿龙舟事"，"水殿龙舟事"指的是隋炀帝三下江南。\n\n【设问】结合"水殿龙舟事"与材料，思考隋朝灭亡的原因有哪些？\n\n（学生思考、讨论、回答）\n\n【讲述】大兴土木、滥用民力，穷奢极欲。社会的发展遵循着客观规律，隋炀帝滥用民力，已经决定了隋朝短命而亡的结局。'},
       {t:'i',x:'借助地图，通过三个问题层层递进，让学生明白大运河的修筑有着重要的作用，培养史料实证和时空观念。\n\n通过"水殿龙舟事"和材料，分析隋朝灭亡的客观原因，认识到社会发展应遵循客观规律，培养唯物史观。'}
     ]},
     {name:'运河通，助唐朝鼎盛',blocks:[
       {t:'a',x:'【过渡】"至今千里赖通波"——唐朝时期曾多次对大运河进行修整。\n\n【讲述】唐高祖时期基本沿用隋朝大运河。唐太宗时期开始增修。武则天时期洛阳形成"天下舟船所集，常万余艘"的繁荣景象。唐玄宗时期修整频率大大增加。'},
-      {t:'m',x:'整理自全汉昇《唐宋帝国与运河》等\n\n唐朝帝王修整大运河情况表',img:null},
+      {t:'m',x:'整理自全汉昇《唐宋帝国与运河》等\n\n唐朝帝王修整大运河情况表',img:null,al:'left'},
       {t:'a',x:'【过渡】唐朝经历了太宗、高宗、武则天、玄宗等多任皇帝，出现盛世局面。\n\n【任务】阅读书本，完成表格填写。\n\n【讲述】太宗李世民轻徭薄赋、知人善任，出现"贞观之治"。武则天重视发展生产。唐玄宗选贤任能、改革吏治，出现"开元盛世"。\n\n【问题】概括唐前期帝王们治理措施的共同特点。'},
-      {t:'m',x:'▲唐朝前期疆域和边疆各族分布图',img:null},
+      {t:'m',x:'▲唐朝前期疆域和边疆各族分布图',img:null,al:'left'},
       {t:'a',x:'【任务】阅读书本结合地图梳理唐朝安边的历程。\n\n【讲述】北方面对突厥：太宗灭东突厥，设安西都护府；武则天设北庭都护府；玄宗平后突厥。西南面对吐蕃：文成公主入藏，唐蕃会盟。东北靺鞨族：玄宗册封大祚荣。西北回纥：玄宗册封首领。'},
-      {t:'m',x:'中国百姓，实天下之根本。四夷之人，乃同枝叶。扰其根本以厚枝叶，而求义安，末之有也。\n——【唐】吴兢《贞观政要·安边第三十六》\n\n开元天宝年间的运河对于大唐帝国所尽的任务，比过去更为重大……大唐帝国便成为一个真正的统一的整体，力量无比雄厚。\n——全汉昇《唐宋帝国与运河》',img:null},
+      {t:'m',x:'中国百姓，实天下之根本。四夷之人，乃同枝叶。扰其根本以厚枝叶，而求义安，末之有也。\n——【唐】吴兢《贞观政要·安边第三十六》\n\n开元天宝年间的运河对于大唐帝国所尽的任务，比过去更为重大……大唐帝国便成为一个真正的统一的整体，力量无比雄厚。\n——全汉昇《唐宋帝国与运河》',img:null,al:'left'},
       {t:'a',x:'【问题】阅读上述材料，思考唐朝能够成功安边的原因有哪些？\n\n（学生思考、讨论、回答）\n\n【讲授】开明的民族政策、运河沟通大唐帝国成为整体、以及唐朝本身国力强盛。'},
       {t:'i',x:'通过表格梳理，让学生了解唐朝治理措施。通过概括共同特点，加深理解。\n\n借助地图帮助学生梳理安边措施，了解民族交融进一步发展的表现，培养时空观念。'}
     ]},
     {name:'运河塞，现唐末乱象',blocks:[
       {t:'a',x:'【过渡】唐肃宗时期大运河因年久失修出现淤塞。唐僖宗时期出现决堤断绝。\n\n【问题】思考在这个时期发生了哪两场影响巨大的动乱？\n\n【讲述】安史之乱和黄巢起义。'},
-      {t:'m',x:'朝事付之宰相，边事付之诸将。\n——司马光《资治通鉴》',img:null},
+      {t:'m',x:'朝事付之宰相，边事付之诸将。\n——司马光《资治通鉴》',img:null,al:'left'},
       {t:'a',x:'【讲述】"朝事付之宰相"——李林甫口蜜腹剑，杨国忠飞扬跋扈，中央政治腐败。\n\n"边事付之诸将"——节度使掌握土地、人民、兵甲、财赋，出现外重内轻局面。'},
-      {t:'m',x:'（节度使）既有其土地，又有其人民，又有其兵甲，又有其财赋。\n——宋祁、欧阳修等《新唐书》\n\n▲唐中后期节度使分布图',img:null},
+      {t:'m',x:'（节度使）既有其土地，又有其人民，又有其兵甲，又有其财赋。\n——宋祁、欧阳修等《新唐书》\n\n▲唐中后期节度使分布图',img:null,al:'left'},
       {t:'a',x:'【讲述】755年安禄山起兵，安史之乱历时八年，大大消耗国力。此后藩镇割据。875年黄巢起义波及大半个中国。907年朱温废唐称帝，唐朝灭亡。'},
       {t:'i',x:'借助材料帮助学生理解唐中后期中央和地方状况，理解安史之乱爆发原因，培养历史解释能力。\n\n通过地图结合材料，让学生理解藩镇特点及影响，了解黄巢起义后唐朝灭亡。'}
     ]},
     {name:'运河断，历五代十国',blocks:[
       {t:'a',x:'【讲授】五代指黄河流域次第更迭的后梁、后唐、后晋、后汉、后周。十国指五代之外先后并立的割据政权。\n\n【设问】根据地图和表格，指出五代十国的政权特点。'},
-      {t:'m',x:'▲唐末藩镇割据地图 / 五代十国地图 / 五代十国开国君主即位前官职表',img:null},
+      {t:'m',x:'▲唐末藩镇割据地图 / 五代十国地图 / 五代十国开国君主即位前官职表',img:null,al:'left'},
       {t:'a',x:'【讲述】五代十国是唐末藩镇割据的延续。周世宗通过治理运河提升实力，为北宋结束分裂奠定基础。分裂中孕育统一因素，统一是必然趋势。'},
       {t:'i',x:'通过地图和表格，让学生理解五代十国的性质是唐末藩镇割据的延续。让学生了解大运河仍占重要地位，明白分裂中孕育统一因素。'}
     ]},

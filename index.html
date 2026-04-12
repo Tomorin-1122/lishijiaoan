@@ -107,9 +107,9 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--tx);
 <body>
 <div style="display:flex;height:100vh">
 <aside class="sb"><div class="sb-brand"><h1>教案工坊</h1><p>教学设计生成器</p></div><nav class="sb-nav" id="nav"></nav><div class="sb-ft"><div class="asv" id="asi" style="display:none;padding:0 3px 3px"><span class="dt"></span>已自动保存</div><button class="sbb g" onclick="loadEx()"><i class="fa-solid fa-flask" style="font-size:10px"></i> 加载示例</button><button class="sbb g" onclick="clrAll()"><i class="fa-solid fa-rotate-left" style="font-size:10px"></i> 重置</button><button class="sbb p" onclick="showPV()"><i class="fa-solid fa-eye" style="font-size:10px"></i> 预览</button></div></aside>
-<div class="ma"><div class="mh"><h2 id="stT"></h2><div style="display:flex;gap:8px"><button class="hb" onclick="showPV()"><i class="fa-regular fa-eye"></i> 预览</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div></div><div class="mb" id="mB"></div><div class="bn" id="bN"><button class="hb" id="pB" onclick="pS()" style="visibility:hidden"><i class="fa-solid fa-arrow-left"></i> 上一步</button><button class="hb a" id="nB" onclick="nS()">下一步 <i class="fa-solid fa-arrow-right"></i></button></div></div>
+<div class="ma"><div class="mh"><h2 id="stT"></h2><div style="display:flex;gap:8px"><button class="hb" onclick="showPV()"><i class="fa-regular fa-eye"></i> 预览</button><button class="hb" onclick="printPDF()"><i class="fa-solid fa-print"></i> 打印</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div></div><div class="mb" id="mB"></div><div class="bn" id="bN"><button class="hb" id="pB" onclick="pS()" style="visibility:hidden"><i class="fa-solid fa-arrow-left"></i> 上一步</button><button class="hb a" id="nB" onclick="nS()">下一步 <i class="fa-solid fa-arrow-right"></i></button></div></div>
 </div>
-<div class="po" id="pO"><div class="pc"><button class="px" onclick="hidPV()"><i class="fa-solid fa-xmark"></i></button><div class="pt"><button class="hb" onclick="hidPV()">关闭</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div><div class="pdw" id="pDW"></div></div></div>
+<div class="po" id="pO"><div class="pc"><button class="px" onclick="hidPV()"><i class="fa-solid fa-xmark"></i></button><div class="pt"><button class="hb" onclick="hidPV()">关闭</button><button class="hb" onclick="printPDF()"><i class="fa-solid fa-print"></i> 打印</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div><div class="pdw" id="pDW"></div></div></div>
 <div class="el" id="eL"><div class="esp"></div><p>正在生成PDF文档…</p></div>
 <div class="tst" id="tst"></div>
 <input type="file" id="gFI" accept="image/*" style="display:none">
@@ -347,6 +347,19 @@ async function expPDF(){
     if(pw){pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${e(title)}</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"><style>@page{margin:12mm}body{margin:0}img{max-width:100%}${dCSS()}</style></head><body>${rDoc()}</body></html>`);pw.document.close();setTimeout(()=>{try{pw.print()}catch(ex){}},800)}
   }finally{document.body.removeChild(ct);ld.classList.remove('sh')}
 }
+
+/* 打印功能 */
+function printPDF(){
+  hidPV();
+  const title=S.basic.title||'教学设计';
+  const pw=window.open('','_blank');
+  if(pw){
+    pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${e(title)}</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"><style>@page{margin:12mm}body{margin:0}img{max-width:100%}${dCSS()}</style></head><body>${rDoc()}</body></html>`);
+    pw.document.close();
+    setTimeout(()=>{try{pw.print()}catch(ex){console.error('打印失败:',ex)}},500)
+  }
+}
+
 
 /* 吐司 */
 function tst(msg,tp){const el=document.getElementById('tst');el.className='tst '+(tp==='ok'?'ok':tp==='er'?'er':'in');const ic={ok:'fa-circle-check',er:'fa-circle-xmark',in:'fa-circle-info'};el.innerHTML=`<i class="fa-solid ${ic[tp]||ic.in}"></i> ${msg}`;el.classList.add('sh');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('sh'),3500)}

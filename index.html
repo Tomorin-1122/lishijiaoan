@@ -277,8 +277,7 @@ function rClDoc(){
     h.push(`<div class="${c}-s2"><div class="${c}-ft">教学过程</div>`);
     f.forEach((st,si)=>{
       const lbl=CN[si]?(CN[si]+'、'+st.name):('环节'+(si+1));
-      const bfPage=si>0?' bf-page':'';
-      h.push(`<div class="${c}-sp${bfPage}"><div class="${c}-sn">${e(lbl)}</div>`);
+      h.push(`<div class="${c}-sp"><div class="${c}-sn">${e(lbl)}</div>`);
       st.blocks.forEach((bk,bi)=>{
         if(bk.t==='a'&&bk.x.trim()){h.push(`<div class="${c}-sb"><div class="${c}-bl">教学活动</div><div>${eB(bk.x)}</div></div>`)}
         if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){const algn=bk.al||'left';const alCls=algn==='center'?' txt-c':(algn==='right'?' txt-r':'');h.push(`<div class="${c}-sb"><div class="${c}-mb${alCls}"><div class="${c}-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="${c}-mt${alCls}">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="${c}-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
@@ -313,8 +312,7 @@ function rMdDoc(){
     h.push(`<div class="dm-s2"><div class="dm-ft">教学过程</div>`);
     f.forEach((st,si)=>{
       const lbl=CN[si]?(CN[si]+'、'+st.name):('环节'+(si+1));
-      const bfPage=si>0?' bf-page':'';
-      h.push(`<div class="dm-sp${bfPage}"><div class="dm-sn">${e(lbl)}</div>`);
+      h.push(`<div class="dm-sp"><div class="dm-sn">${e(lbl)}</div>`);
       st.blocks.forEach((bk,bi)=>{
         if(bk.t==='a'&&bk.x.trim())h.push(`<div class="dm-sb"><div class="dm-bl">教学活动</div><div>${eB(bk.x)}</div></div>`);
         if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){const algn=bk.al||'left';const alCls=algn==='center'?' txt-c':(algn==='right'?' txt-r':'');h.push(`<div class="dm-sb"><div class="dm-mb${alCls}"><div class="dm-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="dm-mt${alCls}">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="dm-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}

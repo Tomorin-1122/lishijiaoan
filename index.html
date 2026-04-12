@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教案工坊 — 教学设计生成器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{--bg:#f5f1eb;--sb:#1c1a17;--sb-h:#2a2722;--sb-t:#a09888;--sb-a:#e8dfd3;--card:#fff;--acc:#b8503a;--acc-h:#9e3f2b;--acc-s:#fdf0ec;--grn:#3d6b4f;--grn-s:#eaf2ed;--tx:#2c2418;--tx2:#6b5f50;--tx3:#9a8e7e;--bd:#e6dfd5;--bd2:#f0ebe3;--ib:#eaf2fb;--ibb:#b4cceb;--mb:#faf8f4;--mbd:#d6cdbf;--dng:#c44040;--dng-s:#fef2f2}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--tx);overflow:hidden;height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.sb{width:228px;min-width:228px;background:var(--sb);display:flex;flex-direction:column;height:100vh}
+.sb-brand{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-brand h1{font-family:'Noto Serif SC',serif;font-size:19px;font-weight:700;color:#e8dfd3;letter-spacing:2px}
+.sb-brand p{font-size:10.5px;color:var(--sb-t);margin-top:3px;letter-spacing:1px}
+.sb-nav{flex:1;padding:14px 0;overflow-y:auto}
+.ni{display:flex;align-items:center;gap:11px;padding:10px 18px;cursor:pointer;transition:all .2s;color:var(--sb-t);font-size:13px;border-left:3px solid transparent}
+.ni:hover{background:var(--sb-h);color:#ccc3b5}.ni.act{color:var(--sb-a);border-left-color:var(--acc);background:rgba(184,80,58,.08)}
+.ni .sn{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;border:1.5px solid var(--sb-t);transition:all .2s;flex-shrink:0}
+.ni.act .sn{border-color:var(--acc);background:var(--acc);color:#fff}.ni.dn .sn{border-color:var(--grn);background:var(--grn);color:#fff}
+.sb-ft{padding:14px 18px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:7px}
+.sbb{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:5px;font-size:12px;cursor:pointer;transition:all .2s;border:none;width:100%;justify-content:center;font-family:inherit}
+.sbb.p{background:var(--acc);color:#fff}.sbb.p:hover{background:var(--acc-h)}
+.sbb.g{background:transparent;color:var(--sb-t);border:1px solid rgba(255,255,255,.1)}.sbb.g:hover{background:var(--sb-h);color:#ccc3b5}
+.ma{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.mh{padding:16px 32px;border-bottom:1px solid var(--bd);background:var(--card);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.mh h2{font-family:'Noto Serif SC',serif;font-size:17px;font-weight:700;flex:1}
+.hb{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:5px;font-size:12px;cursor:pointer;transition:all .2s;border:1.5px solid var(--bd);background:var(--card);color:var(--tx2);font-family:inherit}
+.hb:hover{border-color:var(--tx3);color:var(--tx)}.hb.a{background:var(--acc);color:#fff;border-color:var(--acc)}.hb.a:hover{background:var(--acc-h)}
+.hb.gr{background:var(--grn);color:#fff;border-color:var(--grn)}.hb.gr:hover{background:#345c44}
+.mb{flex:1;overflow-y:auto;padding:24px 32px 90px}
+.fs{margin-bottom:24px}.fst{font-size:13.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px}.fst::before{content:'';width:3px;height:14px;background:var(--acc);border-radius:2px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.fg{display:flex;flex-direction:column;gap:4px}.fg.fu{grid-column:1/-1}
+.fl{font-size:12px;color:var(--tx2);font-weight:500;display:flex;align-items:center;gap:4px}
+.fi,.fsel,.ft{padding:8px 11px;border:1.5px solid var(--bd);border-radius:5px;font-size:13px;font-family:inherit;color:var(--tx);background:var(--card);transition:border-color .2s;outline:none;line-height:1.6}
+.fi:focus,.fsel:focus,.ft:focus{border-color:var(--acc)}.ft{resize:vertical;min-height:90px}
+.fi::placeholder,.ft::placeholder{color:var(--tx3)}.cc{font-size:10.5px;color:var(--tx3);text-align:right;margin-top:1px}
+.ot{font-size:10px;color:var(--tx3);font-weight:400;background:var(--bd2);padding:1px 6px;border-radius:3px;letter-spacing:.5px}
+.tc{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
+.tch{padding:2px 9px;border-radius:3px;font-size:11px;cursor:pointer;background:var(--acc-s);color:var(--acc);border:1px solid rgba(184,80,58,.15);transition:all .15s;font-family:inherit;white-space:nowrap}
+.tch:hover{background:var(--acc);color:#fff}
+.fc{background:var(--card);border:1.5px solid var(--bd);border-radius:7px;padding:18px;margin-bottom:14px;transition:border-color .2s}.fc:hover{border-color:var(--tx3)}
+.fch{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.fcn{width:26px;height:26px;border-radius:5px;background:var(--acc-s);color:var(--acc);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.fcd{margin-left:auto;width:26px;height:26px;border-radius:4px;border:none;background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:12px}
+.fcd:hover{background:var(--dng-s);color:var(--dng)}
+/* 块 */
+.blk{margin-bottom:8px;border-radius:6px;overflow:hidden}
+.blk-act{background:var(--card);border:1px solid var(--bd2);padding:12px}
+.blk-mat{background:var(--mb);border:1.5px solid var(--mbd);padding:12px}
+.blk-int{background:var(--ib);border:1.5px solid var(--ibb);padding:12px;margin-top:10px}
+.blk-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.blk-lbl{font-size:11.5px;font-weight:600;color:var(--tx2);letter-spacing:.5px}
+.blk-lbl.mat{font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;color:#8a7a65;font-size:12.5px}
+.blk-lbl.int{color:#4a7db5}
+.blk-del{width:24px;height:24px;border-radius:4px;border:none;background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px}
+.blk-del:hover{background:var(--dng-s);color:var(--dng)}
+.blk-ins{display:flex;gap:5px;margin-top:8px}
+.blk-ins-btn{padding:3px 10px;border-radius:3px;border:1px dashed var(--bd);background:transparent;color:var(--tx3);font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:3px}
+.blk-ins-btn:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-s)}
+.mta{width:100%;border:1px solid var(--mbd);border-radius:4px;padding:7px 9px;font-size:13px;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;line-height:1.8;background:#fff;color:var(--tx);resize:vertical;min-height:60px;outline:none;transition:border-color .2s}
+.mta:focus{border-color:var(--acc)}.mta::placeholder{color:var(--tx3);font-family:'Noto Sans SC',sans-serif;font-size:11.5px}
+.ita{min-height:100px!important;background:transparent!important;border-color:transparent!important}
+.ita:focus{border-color:var(--ibb)!important}
+.iub{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:4px;border:1.5px dashed var(--mbd);background:transparent;color:var(--tx3);font-size:11.5px;cursor:pointer;transition:all .2s;font-family:inherit;margin-top:5px}
+.iub:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-s)}
+.ipw{margin-top:6px;position:relative;display:inline-block}.ipw img{max-width:100%;max-height:180px;border-radius:3px;border:1px solid var(--bd);display:block}
+.ia{display:flex;gap:4px;margin-top:5px}
+.iab{padding:2px 8px;border-radius:3px;border:1px solid var(--bd);background:var(--card);font-size:10.5px;cursor:pointer;color:var(--tx2);transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:3px}
+.iab:hover{border-color:var(--tx3)}.iab.d:hover{background:var(--dng-s);color:var(--dng);border-color:var(--dng)}
+.ab{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border:2px dashed var(--bd);border-radius:7px;background:transparent;color:var(--tx3);font-size:12.5px;cursor:pointer;transition:all .2s;width:100%;font-family:inherit}
+.ab:hover{border-color:var(--acc);color:var(--acc);background:var(--acc-s)}.ab.sm{padding:7px;font-size:11.5px;margin-top:7px}
+.bn{position:fixed;bottom:0;left:228px;right:0;background:var(--card);border-top:1px solid var(--bd);padding:12px 32px;display:flex;justify-content:space-between;align-items:center;z-index:10}
+.tplc{border:2px solid var(--bd);border-radius:9px;cursor:pointer;transition:all .25s;overflow:hidden;background:var(--card)}
+.tplc:hover{border-color:var(--tx3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06)}.tplc.sl{border-color:var(--acc);box-shadow:0 0 0 3px rgba(184,80,58,.12)}
+.tpm{height:200px;padding:16px;overflow:hidden}
+.tpl{padding:12px 16px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.tpl h3{font-size:13.5px;font-weight:600}.tpl span{font-size:11.5px;color:var(--tx3)}
+.po{position:fixed;inset:0;background:rgba(20,18,14,.7);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+.po.sh{opacity:1;pointer-events:auto}
+.pc{background:#e8e4de;border-radius:7px;padding:28px;position:relative;max-width:840px;width:95%;max-height:90vh;display:flex;flex-direction:column;transform:translateY(20px);transition:transform .3s}
+.po.sh .pc{transform:translateY(0)}
+.pt{display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px;flex-shrink:0}
+.pdw{flex:1;overflow-y:auto;background:#fff;box-shadow:0 2px 20px rgba(0,0,0,.1);border-radius:3px}
+.px{position:absolute;top:-11px;right:-11px;width:30px;height:30px;border-radius:50%;background:var(--sb);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:5;transition:transform .2s}.px:hover{transform:scale(1.1)}
+.tst{position:fixed;top:22px;right:22px;z-index:200;padding:10px 18px;border-radius:7px;font-size:12.5px;display:flex;align-items:center;gap:7px;transform:translateX(120%);transition:transform .35s cubic-bezier(.22,1,.36,1);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.tst.sh{transform:translateX(0)}.tst.ok{background:var(--grn);color:#fff}.tst.er{background:var(--dng);color:#fff}.tst.in{background:var(--sb);color:var(--sb-a)}
+.el{position:fixed;inset:0;background:rgba(20,18,14,.6);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+.el.sh{opacity:1;pointer-events:auto}
+.esp{width:34px;height:34px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.el p{color:#e8dfd3;font-size:13.5px}
+.oi{display:flex;gap:7px;align-items:flex-start;margin-bottom:7px}.oi .ft{min-height:48px;flex:1}
+.orm{width:30px;height:30px;border-radius:4px;border:none;background:transparent;color:var(--tx3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:11px;margin-top:3px;flex-shrink:0}
+.orm:hover{background:var(--dng-s);color:var(--dng)}
+.asv{font-size:10.5px;color:var(--tx3);display:flex;align-items:center;gap:3px}
+.asv .dt{width:4px;height:4px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div style="display:flex;height:100vh">
+<aside class="sb"><div class="sb-brand"><h1>教案工坊</h1><p>教学设计生成器</p></div><nav class="sb-nav" id="nav"></nav><div class="sb-ft"><div class="asv" id="asi" style="display:none;padding:0 3px 3px"><span class="dt"></span>已自动保存</div><button class="sbb g" onclick="loadEx()"><i class="fa-solid fa-flask" style="font-size:10px"></i> 加载示例</button><button class="sbb g" onclick="clrAll()"><i class="fa-solid fa-rotate-left" style="font-size:10px"></i> 重置</button><button class="sbb p" onclick="showPV()"><i class="fa-solid fa-eye" style="font-size:10px"></i> 预览</button></div></aside>
+<div class="ma"><div class="mh"><h2 id="stT"></h2><div style="display:flex;gap:8px"><button class="hb" onclick="showPV()"><i class="fa-regular fa-eye"></i> 预览</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div></div><div class="mb" id="mB"></div><div class="bn" id="bN"><button class="hb" id="pB" onclick="pS()" style="visibility:hidden"><i class="fa-solid fa-arrow-left"></i> 上一步</button><button class="hb a" id="nB" onclick="nS()">下一步 <i class="fa-solid fa-arrow-right"></i></button></div></div>
+</div>
+<div class="po" id="pO"><div class="pc"><button class="px" onclick="hidPV()"><i class="fa-solid fa-xmark"></i></button><div class="pt"><button class="hb" onclick="hidPV()">关闭</button><button class="hb gr" onclick="expPDF()"><i class="fa-solid fa-file-pdf"></i> 导出PDF</button></div><div class="pdw" id="pDW"></div></div></div>
+<div class="el" id="eL"><div class="esp"></div><p>正在生成PDF文档…</p></div>
+<div class="tst" id="tst"></div>
+<input type="file" id="gFI" accept="image/*" style="display:none">
+
+<script>
+const ST=[{id:'template',l:'选择模板',i:'fa-palette'},{id:'basic',l:'基础信息',i:'fa-file-lines'},{id:'macro',l:'宏观设计',i:'fa-sitemap'},{id:'flow',l:'教学流程',i:'fa-arrows-spin'},{id:'summary',l:'总结反馈',i:'fa-flag-checkered'}];
+const TAGS=['【讲述】','【问题】','【设问】','【讲授】','【过渡】','【PPT展示】','【板书】','【任务】'];
+const CN=['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'];
+let S={tpl:'classic',cs:0,basic:{title:'',ct:'新授课',dur:'一课时',sub:'',grd:''},macro:{ti:'',ta:'',sa:'',obj:[''],kp:'',dp:'',mf:''},flow:[{name:'导入新课',blocks:[{t:'a',x:''},{t:'i',x:''}]}],sum:{con:'',hw:'',bd:'',bi:null,ref:''}};
+let _st=null,_gf=null;
+
+function init(){ldSt();rNav();rSt();uNav()}
+function rNav(){document.getElementById('nav').innerHTML=ST.map((s,i)=>{let c='ni';if(i===S.cs)c+=' act';else if(i<S.cs)c+=' dn';return`<div class="${c}" onclick="gS(${i})"><span class="sn">${i<S.cs?'<i class="fa-solid fa-check" style="font-size:9px"></i>':(i+1)}</span><span>${s.l}</span></div>`}).join('')}
+function uNav(){const p=document.getElementById('pB'),n=document.getElementById('nB');p.style.visibility=S.cs===0?'hidden':'visible';if(S.cs===ST.length-1){n.innerHTML='<i class="fa-solid fa-eye"></i> 预览文档';n.onclick=showPV}else{n.innerHTML='下一步 <i class="fa-solid fa-arrow-right"></i>';n.onclick=nS}document.getElementById('stT').textContent=ST[S.cs].l}
+function gS(i){S.cs=i;rNav();rSt();uNav();document.getElementById('mB').scrollTop=0}
+function pS(){if(S.cs>0)gS(S.cs-1)}function nS(){if(S.cs<ST.length-1)gS(S.cs+1)}
+function rSt(){const b=document.getElementById('mB');const id=ST[S.cs].id;b.innerHTML=id==='template'?rTpl():id==='basic'?rBas():id==='macro'?rMac():id==='flow'?rFlw():rSum();bE()}
+
+/* 模板 */
+function rTpl(){return`<div style="max-width:700px"><p style="color:var(--tx2);font-size:13px;margin-bottom:22px;line-height:1.8">选择一种文档排版风格，仅影响最终PDF视觉呈现。</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:18px"><div class="tplc ${S.tpl==='classic'?'sl':''}" onclick="sT('classic')"><div class="tpm" style="background:#fff"><div style="text-align:center;font-size:9px;font-weight:700;margin-bottom:10px;font-family:'Noto Serif SC',serif">教学设计</div><div style="margin-bottom:8px"><div style="font-size:7px;font-weight:700;color:#b8503a;margin-bottom:3px">◆ 教材分析</div><div style="height:3px;background:#e0dcd6;border-radius:1px;margin-bottom:2px;width:88%"></div></div><div style="border:1px solid #ccc;border-radius:3px;padding:4px;margin-bottom:5px;background:#faf8f4"><div style="font-size:5.5px;font-weight:600;color:#8a7a65;font-family:FangSong,serif">材料一</div><div style="height:2px;background:#ddd;margin-top:2px;width:80%"></div></div><div style="height:3px;background:#e0dcd6;border-radius:1px;margin-bottom:2px;width:90%"></div><div style="background:#eaf2fb;border-left:2px solid #b4cceb;padding:3px;border-radius:0 2px 2px 0;margin-top:4px"><div style="height:2px;background:#c8ddef;width:75%"></div></div></div><div class="tpl"><div><h3>经典学术型</h3><span>边框区块 / ◆ 标题 / 蓝色意图框</span></div>${S.tpl==='classic'?'<i class="fa-solid fa-circle-check" style="color:var(--acc);font-size:16px"></i>':''}</div></div><div class="tplc ${S.tpl==='modern'?'sl':''}" onclick="sT('modern')"><div class="tpm" style="background:#fff"><div style="font-size:10px;font-weight:900;margin-bottom:12px;padding-left:5px;border-left:3px solid #b8503a;font-family:'Noto Serif SC',serif">教学设计</div><div style="margin-bottom:8px"><div style="font-size:7px;font-weight:600;margin-bottom:3px;padding-left:5px;border-left:2px solid #3d6b4f;color:#3d6b4f">教材分析</div><div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px;width:88%"></div></div><div style="border-left:2px solid #d6cdbf;background:#faf8f5;border-radius:0 4px 4px 0;padding:4px 6px;margin-bottom:5px"><div style="font-size:5.5px;font-weight:600;color:#8a7a65;font-family:FangSong,serif">材料一</div><div style="height:2px;background:#e8e4dd;margin-top:2px;width:80%"></div></div><div style="height:3px;background:#eee;border-radius:1px;margin-bottom:2px;width:90%"></div><div style="background:#f0f4f0;border-left:2px solid #3d6b4f;padding:3px;border-radius:0 3px 3px 0;margin-top:4px"><div style="height:2px;background:#d0e0d0;width:75%"></div></div></div><div class="tpl"><div><h3>现代简约型</h3><span>圆角卡片 / 色条标题 / 绿色意图框</span></div>${S.tpl==='modern'?'<i class="fa-solid fa-circle-check" style="color:var(--acc);font-size:16px"></i>':''}</div></div></div></div>`}
+function sT(t){S.tpl=t;rSt();aSv()}
+
+/* 基础信息 */
+function rBas(){const b=S.basic;return`<div style="max-width:600px"><div class="fs"><div class="fst">课题信息</div><div class="fg fu"><label class="fl">课题名称</label><input class="fi" data-f="basic.title" value="${e(b.title)}" placeholder="例：从隋唐盛世到五代十国"></div></div><div class="fs"><div class="fst">课时安排</div><div class="fr"><div class="fg"><label class="fl">课型</label><select class="fsel" data-f="basic.ct">${['新授课','复习课','讲评课','实验课','讨论课','实践活动课'].map(o=>`<option ${b.ct===o?'selected':''}>${o}</option>`).join('')}</select></div><div class="fg"><label class="fl">教学时间</label><input class="fi" data-f="basic.dur" value="${e(b.dur)}" placeholder="一课时"></div></div><div class="fr"><div class="fg"><label class="fl">学科</label><input class="fi" data-f="basic.sub" value="${e(b.sub)}" placeholder="历史"></div><div class="fg"><label class="fl">年级</label><input class="fi" data-f="basic.grd" value="${e(b.grd)}" placeholder="高一"></div></div></div></div>`}
+
+/* 宏观设计 */
+function rMac(){const m=S.macro;return`<div style="max-width:700px"><div class="fs"><div class="fst">教学立意</div><div class="fg fu"><textarea class="ft" data-f="macro.ti" placeholder="本课的核心教学理念与立意线索…">${e(m.ti)}</textarea><div class="cc">${m.ti.length} 字</div></div></div><div class="fs"><div class="fst">教材分析</div><div class="fg fu"><textarea class="ft" data-f="macro.ta" style="min-height:130px" placeholder="本课在教材中的位置、主要内容…">${e(m.ta)}</textarea><div class="cc">${m.ta.length} 字</div></div></div><div class="fs"><div class="fst">学情分析</div><div class="fg fu"><textarea class="ft" data-f="macro.sa" placeholder="学生已有的知识基础、能力水平…">${e(m.sa)}</textarea><div class="cc">${m.sa.length} 字</div></div></div><div class="fs"><div class="fst">教学目标（分点）</div><div id="oL">${m.obj.map((o,i)=>`<div class="oi"><textarea class="ft" data-f="macro.obj.${i}" placeholder="例：通过……（史料实证）">${e(o)}</textarea>${m.obj.length>1?`<button class="orm" onclick="rmO(${i})"><i class="fa-solid fa-xmark"></i></button>`:''}</div>`).join('')}</div><button class="ab sm" onclick="addO()"><i class="fa-solid fa-plus"></i> 添加目标</button></div><div class="fs"><div class="fst">教学重难点</div><div class="fg fu"><label class="fl">重点</label><textarea class="ft" data-f="macro.kp" placeholder="本课教学的核心重点">${e(m.kp)}</textarea></div><div class="fg fu"><label class="fl">难点</label><textarea class="ft" data-f="macro.dp" placeholder="学生理解困难的关键点">${e(m.dp)}</textarea></div></div><div class="fs"><div class="fst">学法教法 <span class="ot">选填</span></div><div class="fg fu"><textarea class="ft" data-f="macro.mf" placeholder="学法：阅读法…&#10;教法：讲授法…" style="background:#fafaf8;border-style:dashed">${e(m.mf)}</textarea></div></div></div>`}
+function addO(){S.macro.obj.push('');rSt();aSv();setTimeout(()=>{const l=document.getElementById('oL');if(l){const t=l.querySelectorAll('textarea');if(t.length)t[t.length-1].focus()}},50)}
+function rmO(i){S.macro.obj.splice(i,1);rSt();aSv()}
+
+/* 教学流程 */
+function rFlw(){const f=S.flow;return`<div style="max-width:780px"><p style="color:var(--tx2);font-size:12.5px;margin-bottom:18px;line-height:1.7">每个环节由"教学活动"与"材料"块自由组合。点击标签可快速插入活动类型标记，点击块底部按钮可在任意位置插入新材料或新活动片段。</p>${f.map((st,si)=>`<div class="fc"><div class="fch"><span class="fcn">${si+1}</span><input class="fi" data-f="flow.${si}.name" value="${e(st.name)}" placeholder="环节名称" style="flex:1;max-width:240px;font-weight:600"><button class="fcd" onclick="rmF(${si})" title="删除环节"><i class="fa-solid fa-trash-can"></i></button></div>${st.blocks.map((bk,bi)=>rBlk(si,bi,bk)).join('')}</div>`).join('')}<button class="ab" onclick="addF()"><i class="fa-solid fa-plus"></i> 添加教学环节</button></div>`}
+
+function rBlk(si,bi,bk){
+  if(bk.t==='a') return `<div class="blk blk-act"><div class="blk-hdr"><span class="blk-lbl">教学活动</span><button class="blk-del" onclick="rmB(${si},${bi})" title="删除此活动片段"><i class="fa-solid fa-xmark"></i></button></div><div class="tc">${TAGS.map(t=>`<button type="button" class="tch" onclick="insT(${si},${bi},'${t}')">${t.replace(/【|】/g,'')}</button>`).join('')}</div><textarea class="ft" data-f="flow.${si}.blocks.${bi}.x" style="min-height:110px" placeholder="【讲述】…&#10;【问题】…">${e(bk.x)}</textarea><div class="blk-ins"><button class="blk-ins-btn" onclick="addB(${si},${bi},'m')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入材料</button></div></div>`;
+  if(bk.t==='m') return `<div class="blk blk-mat"><div class="blk-hdr"><span class="blk-lbl mat">材料</span><button class="blk-del" onclick="rmB(${si},${bi})" title="删除此材料"><i class="fa-solid fa-xmark"></i></button></div><textarea class="mta" data-f="flow.${si}.blocks.${bi}.x" placeholder="输入材料内容（史料、文献等）…">${e(bk.x)}</textarea>${bk.img?`<div class="ipw"><img src="${bk.img}" alt="材料图片"><div class="ia"><button type="button" class="iab" onclick="trgI(${si},${bi})"><i class="fa-solid fa-arrows-rotate"></i> 更换</button><button type="button" class="iab d" onclick="rmI(${si},${bi})"><i class="fa-solid fa-trash-can"></i> 删除</button></div></div>`:`<button type="button" class="iub" onclick="trgI(${si},${bi})"><i class="fa-solid fa-image"></i> 上传图片</button>`}<input type="file" id="fi-${si}-${bi}" accept="image/*" style="display:none" onchange="hI(${si},${bi},this)"><div class="blk-ins"><button class="blk-ins-btn" onclick="addB(${si},${bi},'a')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入活动</button><button class="blk-ins-btn" onclick="addB(${si},${bi},'m')"><i class="fa-solid fa-plus" style="font-size:9px"></i> 在此插入材料</button></div></div>`;
+  if(bk.t==='i') return `<div class="blk blk-int"><div class="blk-hdr"><span class="blk-lbl int">设计意图</span></div><textarea class="ft ita" data-f="flow.${si}.blocks.${bi}.x" placeholder="通过……引导学生……">${e(bk.x)}</textarea></div>`;
+  return '';
+}
+
+function addF(){const n=S.flow.length;const nm=['导入新课','新知探究','深化理解','巩固练习','课堂小结','拓展延伸'];S.flow.push({name:n<nm.length?nm[n]:`环节${n+1}`,blocks:[{t:'a',x:''},{t:'i',x:''}]});rSt();aSv();setTimeout(()=>{const c=document.querySelectorAll('.fc');if(c.length)c[c.length-1].scrollIntoView({behavior:'smooth',block:'center'})},50)}
+function rmF(si){if(S.flow.length<=1){tst('至少保留一个环节','er');return}S.flow.splice(si,1);rSt();aSv()}
+function addB(si,bi,type){const nb=type==='m'?{t:'m',x:'',img:null}:{t:'a',x:''};S.flow[si].blocks.splice(bi+1,0,nb);rSt();aSv()}
+function rmB(si,bi){const bk=S.flow[si].blocks[bi];if(bk.t==='i')return;const ac=S.flow[si].blocks.filter(b=>b.t==='a').length;if(bk.t==='a'&&ac<=1){tst('至少保留一个教学活动片段','er');return}S.flow[si].blocks.splice(bi,1);rSt();aSv()}
+function insT(si,bi,tag){const ta=document.querySelector(`[data-f="flow.${si}.blocks.${bi}.x"]`);if(!ta)return;const s=ta.selectionStart,en=ta.selectionStart,v=ta.value;const pf=(s>0&&v[s-1]!=='\n')?'\n':'';ta.value=v.substring(0,s)+pf+tag+v.substring(en);const np=s+pf.length+tag.length;ta.selectionStart=ta.selectionEnd=np;ta.focus();ta.dispatchEvent(new Event('input'))}
+
+/* 图片 */
+function trgI(si,bi){const inp=document.getElementById(`fi-${si}-${bi}`);if(inp)inp.click()}
+function hI(si,bi,inp){const file=inp.files[0];if(!file)return;if(file.size>10*1024*1024){tst('图片不能超过10MB','er');inp.value='';return}cmpI(file).then(b64=>{S.flow[si].blocks[bi].img=b64;rSt();aSv();tst('图片已添加','ok')}).catch(()=>tst('图片处理失败','er'));inp.value=''}
+function rmI(si,bi){S.flow[si].blocks[bi].img=null;rSt();aSv()}
+function cmpI(file,mw=600,q=0.6){return new Promise(res=>{const r=new FileReader();r.onload=ev=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');let w=img.width,h=img.height;if(w>mw){h=h*mw/w;w=mw}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',q))};img.onerror=()=>res(null);img.src=ev.target.result};r.readAsDataURL(file)})}
+function trgBI(){document.getElementById('gFI').click()}
+
+/* 总结反馈 */
+function rSum(){const s=S.sum;return`<div style="max-width:600px"><div class="fs"><div class="fst">课堂总结 <span class="ot">选填</span></div><div class="fg fu"><textarea class="ft" data-f="sum.con" placeholder="对本课内容的回顾…" style="background:#fafaf8;border-style:dashed">${e(s.con)}</textarea><div class="cc">${s.con.length} 字</div></div></div><div class="fs"><div class="fst">课堂作业 <span class="ot">选填</span></div><div class="fg fu"><textarea class="ft" data-f="sum.hw" placeholder="课后任务或思考题…" style="background:#fafaf8;border-style:dashed">${e(s.hw)}</textarea></div></div><div class="fs"><div class="fst">板书设计</div><div class="fg fu"><label class="fl">文字描述</label><textarea class="ft" data-f="sum.bd" style="min-height:130px;font-family:'KaiTi','STKaiti','Noto Serif SC',serif;font-size:13.5px" placeholder="描述板书结构…">${e(s.bd)}</textarea><div class="cc">${s.bd.length} 字</div></div><div class="fg fu"><label class="fl">板书图片</label>${s.bi?`<div class="ipw"><img src="${s.bi}" style="max-height:280px" alt="板书"><div class="ia"><button type="button" class="iab" onclick="trgBI()"><i class="fa-solid fa-arrows-rotate"></i> 更换</button><button type="button" class="iab d" onclick="rmBI()"><i class="fa-solid fa-trash-can"></i> 删除</button></div></div>`:`<button type="button" class="iub" onclick="trgBI()"><i class="fa-solid fa-image"></i> 上传板书图片</button>`}<input type="file" id="gFI" accept="image/*" style="display:none" onchange="hBI(this)"></div></div><div class="fs"><div class="fst">教学反思 <span class="ot">选填</span></div><div class="fg fu"><textarea class="ft" data-f="sum.ref" placeholder="课后填写…" style="min-height:100px;background:#fafaf8;border-style:dashed">${e(s.ref)}</textarea><div class="cc">${s.ref.length} 字</div></div></div><div style="margin-top:28px;padding:18px;background:var(--grn-s);border-radius:7px;border-left:4px solid var(--grn)"><p style="font-size:13px;color:var(--grn);font-weight:600;margin-bottom:5px"><i class="fa-solid fa-circle-check" style="margin-right:3px"></i> 所有模块填写完毕</p><p style="font-size:12px;color:var(--tx2);line-height:1.7">标有"选填"的模块留空则不出现在文档中。点击「预览文档」查看效果。</p></div></div>`}
+function hBI(inp){const file=inp.files[0];if(!file)return;cmpI(file,800,0.7).then(b64=>{S.sum.bi=b64;rSt();aSv();tst('图片已添加','ok')}).catch(()=>tst('图片处理失败','er'));inp.value=''}
+function rmBI(){S.sum.bi=null;rSt();aSv()}
+
+/* 事件绑定 */
+function bE(){document.querySelectorAll('[data-f]').forEach(el=>{const f=el.dataset.f,vt=el.tagName==='SELECT'?'change':'input';el.addEventListener(vt,()=>{sFV(f,el.value);const c=el.parentElement.querySelector('.cc');if(c)c.textContent=el.value.length+' 字';aSv()})})}
+function sFV(f,v){const p=f.split('.');let o=S;for(let i=0;i<p.length-1;i++){if(!(p[i] in o))o[p[i]]={};o=o[p[i]]}o[p[p.length-1]]=v}
+function e(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function eB(s){if(!s)return '';return e(s).replace(/\n/g,'<br>')}
+
+/* 保存/加载 */
+function aSv(){clearTimeout(_st);_st=setTimeout(()=>{try{localStorage.setItem('jiaan_v2',JSON.stringify(S));const i=document.getElementById('asi');i.style.display='flex';setTimeout(()=>i.style.display='none',3000)}catch(err){tst('保存失败：存储空间可能已满','er')}},700)}
+function ldSt(){try{const r=localStorage.getItem('jiaan_v2');if(!r){ldOld();return}const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>({name:st.name||'',blocks:Array.isArray(st.blocks)?st.blocks.map(b=>{const nb={t:b.t||'a',x:b.x||''};if(b.t==='m')nb.img=b.img||null;return nb}):[{t:'a',x:''},{t:'i',x:''}]}))}if(s.sum){Object.assign(S.sum,s.sum);if(!('bi' in S.sum))S.sum.bi=null}if(s.tpl)S.tpl=s.tpl}catch(err){ldOld()}}
+function ldOld(){try{const r=localStorage.getItem('jiaan_data');if(!r)return;const s=JSON.parse(r);if(s.basic)Object.assign(S.basic,s.basic);if(s.macro)Object.assign(S.macro,s.macro);if(s.flow){S.flow=s.flow.map(st=>{const blocks=[];if(st.teacher)blocks.push({t:'a',x:st.teacher});if(st.materials)st.materials.forEach(m=>{if(m.text||m.image)blocks.push({t:'m',x:m.text||'',img:m.image||null})});blocks.push({t:'i',x:st.intent||''});return{name:st.name||'',blocks}})}if(s.summary)Object.assign(S.sum,{con:s.summary.conclusion||'',hw:s.summary.homework||'',bd:s.summary.boardDesign||'',bi:null,ref:s.summary.reflection||''});localStorage.removeItem('jiaan_data');aSv()}catch(err){}}
+function clrAll(){if(!confirm('确定清空所有内容？'))return;localStorage.removeItem('jiaan_v2');localStorage.removeItem('jiaan_data');S={tpl:'classic',cs:0,basic:{title:'',ct:'新授课',dur:'一课时',sub:'',grd:''},macro:{ti:'',ta:'',sa:'',obj:[''],kp:'',dp:'',mf:''},flow:[{name:'导入新课',blocks:[{t:'a',x:''},{t:'i',x:''}]}],sum:{con:'',hw:'',bd:'',bi:null,ref:''}};gS(0);tst('已重置','in')}
+
+/* 材料全局编号 */
+function matMap(){const m=new Map();let c=0;S.flow.forEach((st,si)=>{st.blocks.forEach((bk,bi)=>{if(bk.t==='m'&&(bk.x.trim()||bk.img)){m.set(si+'-'+bi,c);c++}})});return m}
+function matL(i){return'材料'+(CN[i]!==undefined?CN[i]:(i+1))}
+
+/* 文档CSS（不用CSS变量，确保PDF正确渲染） */
+function dCSS(){return`
+.dc{padding:42px 48px;font-family:'SimSun','Noto Serif SC',serif;font-size:13.5px;line-height:1.9;color:#222;max-width:210mm;margin:0 auto}
+.dc-t{text-align:center;font-size:20px;font-weight:700;font-family:'Noto Serif SC','SimSun',serif;margin-bottom:6px;letter-spacing:1px}
+.dc-s{text-align:center;font-size:12px;color:#888;margin-bottom:26px}
+.dc-s2{margin-bottom:18px}
+.dc-st{font-size:14.5px;font-weight:700;color:#b8503a;margin-bottom:7px;font-family:'Noto Serif SC','SimSun',serif}
+.dc-st::before{content:'◆ '}
+.dc-tx{text-indent:2em;text-align:justify;margin-bottom:5px}
+.dc-oi{padding-left:2em;position:relative;margin-bottom:3px;text-indent:0}
+.dc-oi::before{content:'';position:absolute;left:.7em;top:.65em;width:5px;height:5px;background:#b8503a;border-radius:50%}
+.dc-kd{margin-bottom:5px}.dc-kl{font-weight:700;display:inline;margin-right:4px}
+.dc-ft{font-size:14px;font-weight:700;margin-bottom:12px;margin-top:6px;text-align:center;font-family:'Noto Serif SC','SimSun',serif}
+.dc-sp{margin-bottom:5px;border:1.5px solid #bbb;border-radius:4px;overflow:hidden}
+.dc-sn{font-size:13.5px;font-weight:700;padding:6px 11px;background:#f7f5f2;font-family:'Noto Serif SC','SimSun',serif}
+.dc-sb{padding:9px 11px;border-top:1px solid #ddd}.dc-sb:last-child{border-bottom:none}
+.dc-bl{font-size:11px;font-weight:700;color:#888;margin-bottom:3px;letter-spacing:1px}
+.dc-ib{background:#eaf2fb;border-left:3px solid #b4cceb;padding:5px 7px;border-radius:0 3px 3px 0;font-size:12.5px;line-height:1.7;color:#3a5a7c}
+.dc-mb{background:#faf8f4;border:1px solid #d6cdbf;border-radius:4px;padding:7px 9px;margin-bottom:5px}
+.dc-ml{font-size:12px;font-weight:700;color:#6b5f50;margin-bottom:3px;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif}
+.dc-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap}
+.dc-mi{max-width:100%;margin-top:5px;border-radius:3px;display:block}
+.dc-bd{border:1.5px solid #ccc;padding:14px;margin-top:7px;min-height:50px;background:#fefefe;font-family:'KaiTi','STKaiti','Noto Serif SC',serif}
+.dc-bt{font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;font-family:'Noto Serif SC','SimSun',serif}
+.dc-bi{max-width:100%;margin-top:7px;border-radius:3px;display:block}
+.dm{padding:42px 44px;font-family:'Noto Sans SC','SimSun',sans-serif;font-size:13.5px;line-height:1.9;color:#333;max-width:210mm;margin:0 auto}
+.dm-t{font-size:22px;font-weight:900;font-family:'Noto Serif SC',serif;margin-bottom:4px;padding-left:13px;border-left:4px solid #b8503a;letter-spacing:1px}
+.dm-s{font-size:12px;color:#999;margin-bottom:30px;padding-left:17px}
+.dm-s2{margin-bottom:22px}
+.dm-st{font-size:14px;font-weight:700;margin-bottom:7px;padding-left:9px;border-left:3px solid #3d6b4f;color:#3d6b4f;font-family:'Noto Serif SC',serif}
+.dm-tx{text-indent:2em;text-align:justify;margin-bottom:5px}
+.dm-oi{padding-left:2em;position:relative;margin-bottom:3px;text-indent:0}
+.dm-oi::before{content:'';position:absolute;left:.7em;top:.65em;width:5px;height:5px;background:#3d6b4f;border-radius:50%}
+.dm-ft{font-size:14px;font-weight:700;margin-bottom:12px;margin-top:7px;padding-left:9px;border-left:3px solid #b8503a;color:#b8503a;font-family:'Noto Serif SC',serif}
+.dm-sp{margin-bottom:5px;border:1px solid #e0e0e0;border-radius:7px;overflow:hidden}
+.dm-sn{padding:8px 13px;font-size:13.5px;font-weight:700;background:#fafafa;border-bottom:1px solid #eaeaea;font-family:'Noto Serif SC',serif}
+.dm-sb{padding:10px 13px;border-bottom:1px solid #f0f0f0}.dm-sb:last-child{border-bottom:none}
+.dm-bl{font-size:10.5px;font-weight:600;color:#9a8e7e;letter-spacing:2px;margin-bottom:4px}
+.dm-ib{background:#f0f4f0;border-left:3px solid #3d6b4f;padding:5px 7px;border-radius:0 4px 4px 0;font-size:12.5px;line-height:1.7;color:#4a6b52}
+.dm-mb{background:#faf8f5;border-left:3px solid #d6cdbf;border-radius:0 5px 5px 0;padding:7px 11px;margin-bottom:5px}
+.dm-ml{font-size:12px;font-weight:700;color:#6b5f50;margin-bottom:2px;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif}
+.dm-mt{font-size:13px;line-height:1.8;font-family:'FangSong','STFangSong','仿宋','Noto Serif SC',serif;white-space:pre-wrap}
+.dm-mi{max-width:100%;margin-top:5px;border-radius:4px;display:block}
+.dm-bd{border:2px solid #e0e0e0;border-radius:5px;padding:14px;margin-top:7px;min-height:50px;background:#fefefe;font-family:'KaiTi','STKaiti','Noto Serif SC',serif}
+.dm-bt{font-size:13px;font-weight:700;text-align:center;margin-bottom:8px;font-family:'Noto Serif SC',serif}
+.dm-bi{max-width:100%;margin-top:7px;border-radius:4px;display:block}
+`}
+
+/* 预览渲染 */
+function rDoc(){return S.tpl==='classic'?rClDoc():rMdDoc()}
+
+function rClDoc(){
+  const b=S.basic,m=S.macro,f=S.flow,s=S.sum,mm=matMap();
+  const c=S.tpl==='classic'?'dc':'dm',h=[];
+  h.push(`<div class="${c}">`);
+  h.push(`<div class="${c}-t">${e(b.title)||'教学设计'}</div>`);
+  const sb=[];if(b.sub)sb.push(b.sub);if(b.grd)sb.push(b.grd);if(b.ct)sb.push(b.ct);if(b.dur)sb.push(b.dur);
+  if(sb.length)h.push(`<div class="${c}-s">${sb.join(' · ')}</div>`);
+  if(m.ti)h.push(`<div class="${c}-s2"><div class="${c}-st">教学立意</div><div class="${c}-tx">${eB(m.ti)}</div></div>`);
+  if(m.ta)h.push(`<div class="${c}-s2"><div class="${c}-st">教材分析</div><div class="${c}-tx">${eB(m.ta)}</div></div>`);
+  if(m.sa)h.push(`<div class="${c}-s2"><div class="${c}-st">学情分析</div><div class="${c}-tx">${eB(m.sa)}</div></div>`);
+  const ob=m.obj.filter(o=>o.trim());if(ob.length){h.push(`<div class="${c}-s2"><div class="${c}-st">教学目标</div>`);ob.forEach(o=>h.push(`<div class="${c}-oi">${eB(o)}</div>`));h.push(`</div>`)}
+  if(m.kp||m.dp){h.push(`<div class="${c}-s2"><div class="${c}-st">重难点</div>`);if(m.kp)h.push(`<div class="dc-kd"><span class="dc-kl">重点：</span>${eB(m.kp)}</div>`);if(m.dp)h.push(`<div class="dc-kd"><span class="dc-kl">难点：</span>${eB(m.dp)}</div>`);h.push(`</div>`)}
+  if(m.mf&&m.mf.trim())h.push(`<div class="${c}-s2"><div class="${c}-st">学法教法</div><div class="${c}-tx">${eB(m.mf)}</div></div>`);
+  // 教学过程
+  const hasFlow=f.some(st=>st.blocks.some(bk=>(bk.t==='a'&&bk.x.trim())||(bk.t==='m'&&(bk.x.trim()||bk.img))||(bk.t==='i'&&bk.x.trim())));
+  if(hasFlow){
+    h.push(`<div class="${c}-s2"><div class="${c}-ft">教学过程</div>`);
+    f.forEach((st,si)=>{
+      h.push(`<div class="${c}-sp"><div class="${c}-sn">${e(st.name||'环节'+(si+1))}</div>`);
+      st.blocks.forEach((bk,bi)=>{
+        if(bk.t==='a'&&bk.x.trim()){h.push(`<div class="${c}-sb"><div class="${c}-bl">教学活动</div><div>${eB(bk.x)}</div></div>`)}
+        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){h.push(`<div class="${c}-sb"><div class="${c}-mb"><div class="${c}-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="${c}-mt">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="${c}-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
+        if(bk.t==='i'&&bk.x.trim()){h.push(`<div class="${c}-sb"><div class="${c}-bl" style="color:#4a7db5">设计意图</div><div class="${c}-ib">${eB(bk.x)}</div></div>`)}
+      });
+      h.push(`</div>`);
+    });
+    h.push(`</div>`);
+  }
+  if(s.con&&s.con.trim())h.push(`<div class="${c}-s2"><div class="${c}-st">课堂总结</div><div class="${c}-tx">${eB(s.con)}</div></div>`);
+  if(s.hw&&s.hw.trim())h.push(`<div class="${c}-s2"><div class="${c}-st">课堂作业</div><div class="${c}-tx">${eB(s.hw)}</div></div>`);
+  if(s.bd.trim()||s.bi){h.push(`<div class="${c}-s2"><div class="${c}-st">板书设计</div><div class="${c}-bd"><div class="${c}-bt">附：本课板书</div>`);if(s.bd)h.push(`<pre style="white-space:pre-wrap;font-family:inherit;margin:0;line-height:1.8">${e(s.bd)}</pre>`);if(s.bi)h.push(`<img class="${c}-bi" src="${s.bi}" alt="">`);h.push(`</div></div>`)}
+  if(s.ref&&s.ref.trim())h.push(`<div class="${c}-s2"><div class="${c}-st">教学反思</div><div class="${c}-tx" style="color:#888;font-style:italic">${eB(s.ref)}</div></div>`);
+  h.push(`</div>`);return h.join('');
+}
+
+function rMdDoc(){
+  const b=S.basic,m=S.macro,f=S.flow,s=S.sum,mm=matMap();
+  const h=[];
+  h.push(`<div class="dm">`);
+  h.push(`<div class="dm-t">${e(b.title)||'教学设计'}</div>`);
+  const sb=[];if(b.sub)sb.push(b.sub);if(b.grd)sb.push(b.grd);if(b.ct)sb.push(b.ct);if(b.dur)sb.push(b.dur);
+  if(sb.length)h.push(`<div class="dm-s">${sb.join(' · ')}</div>`);
+  if(m.ti)h.push(`<div class="dm-s2"><div class="dm-st">教学立意</div><div class="dm-tx">${eB(m.ti)}</div></div>`);
+  if(m.ta)h.push(`<div class="dm-s2"><div class="dm-st">教材分析</div><div class="dm-tx">${eB(m.ta)}</div></div>`);
+  if(m.sa)h.push(`<div class="dm-s2"><div class="dm-st">学情分析</div><div class="dm-tx">${eB(m.sa)}</div></div>`);
+  const ob=m.obj.filter(o=>o.trim());if(ob.length){h.push(`<div class="dm-s2"><div class="dm-st">教学目标</div>`);ob.forEach(o=>h.push(`<div class="dm-oi">${eB(o)}</div>`));h.push(`</div>`)}
+  if(m.kp||m.dp){h.push(`<div class="dm-s2"><div class="dm-st">重难点</div>`);if(m.kp)h.push(`<div style="margin-bottom:4px"><strong style="color:#b8503a">重点：</strong>${eB(m.kp)}</div>`);if(m.dp)h.push(`<div><strong style="color:#b8503a">难点：</strong>${eB(m.dp)}</div>`);h.push(`</div>`)}
+  if(m.mf&&m.mf.trim())h.push(`<div class="dm-s2"><div class="dm-st">学法教法</div><div class="dm-tx">${eB(m.mf)}</div></div>`);
+  const hasFlow=f.some(st=>st.blocks.some(bk=>(bk.t==='a'&&bk.x.trim())||(bk.t==='m'&&(bk.x.trim()||bk.img))||(bk.t==='i'&&bk.x.trim())));
+  if(hasFlow){
+    h.push(`<div class="dm-s2"><div class="dm-ft">教学过程</div>`);
+    f.forEach((st,si)=>{
+      h.push(`<div class="dm-sp"><div class="dm-sn">${e(st.name||'环节'+(si+1))}</div>`);
+      st.blocks.forEach((bk,bi)=>{
+        if(bk.t==='a'&&bk.x.trim())h.push(`<div class="dm-sb"><div class="dm-bl">教学活动</div><div>${eB(bk.x)}</div></div>`);
+        if(bk.t==='m'){const key=si+'-'+bi;if(mm.has(key)){h.push(`<div class="dm-sb"><div class="dm-mb"><div class="dm-ml">${matL(mm.get(key))}</div>`);if(bk.x.trim())h.push(`<div class="dm-mt">${e(bk.x).replace(/\n/g,'<br>')}</div>`);if(bk.img)h.push(`<img class="dm-mi" src="${bk.img}" alt="">`);h.push(`</div></div>`)}}
+        if(bk.t==='i'&&bk.x.trim())h.push(`<div class="dm-sb"><div class="dm-bl" style="color:#3d6b4f">设计意图</div><div class="dm-ib">${eB(bk.x)}</div></div>`);
+      });
+      h.push(`</div>`);
+    });
+    h.push(`</div>`);
+  }
+  if(s.con&&s.con.trim())h.push(`<div class="dm-s2"><div class="dm-st">课堂总结</div><div class="dm-tx">${eB(s.con)}</div></div>`);
+  if(s.hw&&s.hw.trim())h.push(`<div class="dm-s2"><div class="dm-st">课堂作业</div><div class="dm-tx">${eB(s.hw)}</div></div>`);
+  if(s.bd.trim()||s.bi){h.push(`<div class="dm-s2"><div class="dm-st">板书设计</div><div class="dm-bd"><div class="dm-bt">附：本课板书</div>`);if(s.bd)h.push(`<pre style="white-space:pre-wrap;font-family:inherit;margin:0;line-height:1.8">${e(s.bd)}</pre>`);if(s.bi)h.push(`<img class="dm-bi" src="${s.bi}" alt="">`);h.push(`</div></div>`)}
+  if(s.ref&&s.ref.trim())h.push(`<div class="dm-s2"><div class="dm-st">教学反思</div><div class="dm-tx" style="color:#999;font-style:italic">${eB(s.ref)}</div></div>`);
+  h.push(`</div>`);return h.join('');
+}
+
+function docHTML(){return'<style>'+dCSS()+'</style>'+rDoc()}
+
+/* 预览 */
+function showPV(){document.getElementById('pDW').innerHTML=docHTML();document.getElementById('pO').classList.add('sh');document.body.style.overflow='hidden'}
+function hidPV(){document.getElementById('pO').classList.remove('sh');document.body.style.overflow=''}
+document.getElementById('pO').addEventListener('click',function(ev){if(ev.target===this)hidPV()});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape')hidPV()});
+
+/* PDF导出 */
+async function expPDF(){
+  hidPV();
+  const ld=document.getElementById('eL');ld.classList.add('sh');
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  await document.fonts.ready;
+
+  const ct=document.createElement('div');
+  ct.style.cssText='position:absolute;left:0;top:0;z-index:-1;width:794px;background:#fff;';
+  ct.innerHTML=docHTML();
+  document.body.appendChild(ct);
+
+  // 等待图片
+  const imgs=ct.querySelectorAll('img');
+  await Promise.all(Array.from(imgs).map(img=>{if(img.complete)return Promise.resolve();return new Promise(r=>{img.onload=r;img.onerror=r})}));
+  await new Promise(r=>setTimeout(r,300));
+
+  const title=S.basic.title||'教学设计';
+  try{
+    await html2pdf().set({
+      margin:[10,10,10,10],
+      filename:title+'.pdf',
+      image:{type:'jpeg',quality:0.92},
+      html2canvas:{scale:2,useCORS:true,allowTaint:true,letterRendering:true,logging:false,backgroundColor:'#ffffff',width:794,windowWidth:794},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait',compress:true},
+      pagebreak:{mode:['avoid-all','css','legacy'],before:['.dc-s2','.dm-s2','.dc-sp','.dm-sp']}
+    }).from(ct).save();
+    tst('PDF已生成并开始下载','ok');
+  }catch(err){
+    console.error('PDF导出失败:',err);
+    tst('PDF生成遇到问题，正在尝试打印方式…','in');
+    const pw=window.open('','_blank');
+    if(pw){pw.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${e(title)}</title><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"><style>@page{margin:12mm}body{margin:0}img{max-width:100%}${dCSS()}</style></head><body>${rDoc()}</body></html>`);pw.document.close();setTimeout(()=>{try{pw.print()}catch(ex){}},800)}
+  }finally{document.body.removeChild(ct);ld.classList.remove('sh')}
+}
+
+/* 吐司 */
+function tst(msg,tp){const el=document.getElementById('tst');el.className='tst '+(tp==='ok'?'ok':tp==='er'?'er':'in');const ic={ok:'fa-circle-check',er:'fa-circle-xmark',in:'fa-circle-info'};el.innerHTML=`<i class="fa-solid ${ic[tp]||ic.in}"></i> ${msg}`;el.classList.add('sh');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('sh'),3500)}
+
+/* 示例 */
+function loadEx(){
+  S.basic={title:'五千里大运河水，四百载王朝兴亡——从隋唐盛世到五代十国',ct:'新授课',dur:'一课时',sub:'历史',grd:'高一'};
+  S.macro={ti:'本课以隋唐王朝鼎盛局面的形成与统一多民族国家的发展为教学立意。大运河从隋朝开通，唐朝沿用修整，到唐中后期堵塞断绝。大运河见证了隋唐王朝的兴亡，本课试以大运河为主线，带领学生感受近四百年的王朝兴衰与更迭。',ta:'本课是《中外历史纲要（上）》第二单元第二课，主要内容有隋朝的兴亡、唐朝的繁荣与民族交融、安史之乱与五代十国。课程标准要求认识三国两晋南北朝至隋唐时期的制度文化与创新、民族交融等新成就。',sa:'学生通过初中历史课程对隋唐兴亡基本史实有了基本了解。存在的学习困难是：对隋唐兴亡原因、民族政策及民族交融对中华民族发展重要作用的认识存在困难。',obj:['用时间轴梳理隋朝和唐朝兴亡的基本史实，通过地图说出大运河和唐朝少数民族的时空分布。（时空观念）','通过材料分析隋唐兴亡的表现及客观原因，认识到社会发展遵循客观规律。（历史解释、唯物史观）','通过材料解读，分析安史之乱、五代十国政权更迭的主要原因。（史料实证、历史解释）','梳理隋唐治理措施，概括唐朝处理民族关系的理念，感悟民族交融的进一步发展。（家国情怀）'],kp:'通过材料分析隋唐兴亡的表现及客观原因，认识到社会发展遵循客观规律。',dp:'理解唐朝处理民族关系的理念，感悟民族交融进一步发展的表现，加强对统一多民族封建国家的意识。',mf:'学法：阅读法、材料分析法、问题探究法等。\n教法：讲授法、讨论法及多媒体演示法等。'};
+  S.flow=[
+    {name:'课堂导入',blocks:[
+      {t:'a',x:'【讲述】同学们好！本课内容是《从隋唐盛世到五代十国》，起止时间从581年到979年，前后近400年时间。公元581年，北周外戚杨坚代周称帝，改国号隋，定都长安。589年，隋灭陈，结束了南北长期分裂的局面。号称强盛的隋朝，只存在了短短37年。\n\n【问题】隋朝为什么和之前的秦朝一样，"其兴也勃，其亡也忽"呢？'},
+      {t:'m',x:'《汴河怀古》\n【唐】皮日休\n尽道隋亡为此河，至今千里赖通波。\n若无水殿龙舟事，共禹论功不较多。',img:null},
+      {t:'a',x:'【设问】诗中的"此河"指的是哪条河？\n\n是的，汴河，通称大运河。那么我们今天直接跟着大运河来走进本课的学习。'},
+      {t:'i',x:'通过皮日休的《汴河怀古》引导学生得出"此河"即汴河，是隋朝大运河的一部分。再借助隋朝大运河，带领大家走进本课的学习，从而导入新课。'}
+    ]},
+    {name:'运河开，系隋朝兴亡',blocks:[
+      {t:'a',x:'【设问】结合地图指出，大运河连接了哪些城市？为什么要连接这些城市？\n\n（学生思考，回答）\n\n【讲授】长安和洛阳是政治中心，余杭所在南方是经济中心，涿郡所在北方是军事中心。大运河将政治、经济、军事中心连接起来。'},
+      {t:'m',x:'▲隋朝大运河示意图',img:null},
+      {t:'a',x:'【问题】结合书本与刚刚所讲，谈谈你对"共禹论功不较多"的理解。\n\n（学生思考，回答）\n\n【讲授】在政治上，贯通东西、南北巩固统治。经济上，形成贯通南北的运输网络，促进南北经济交流以及运河沿岸的城市发展。'},
+      {t:'m',x:'（大业元年）辛亥，发河南诸郡男女百余万，开通济渠，自西苑引谷、洛水达于河，自板渚引河通于淮。\n——魏征等《隋书》',img:null},
+      {t:'a',x:'【过渡】再回到皮日休的诗，"若无水殿龙舟事"，"水殿龙舟事"指的是隋炀帝三下江南。\n\n【设问】结合"水殿龙舟事"与材料，思考隋朝灭亡的原因有哪些？\n\n（学生思考、讨论、回答）\n\n【讲述】大兴土木、滥用民力，穷奢极欲。社会的发展遵循着客观规律，隋炀帝滥用民力，已经决定了隋朝短命而亡的结局。'},
+      {t:'i',x:'借助地图，通过三个问题层层递进，让学生明白大运河的修筑有着重要的作用，培养史料实证和时空观念。\n\n通过"水殿龙舟事"和材料，分析隋朝灭亡的客观原因，认识到社会发展应遵循客观规律，培养唯物史观。'}
+    ]},
+    {name:'运河通，助唐朝鼎盛',blocks:[
+      {t:'a',x:'【过渡】"至今千里赖通波"——唐朝时期曾多次对大运河进行修整。\n\n【讲述】唐高祖时期基本沿用隋朝大运河。唐太宗时期开始增修。武则天时期洛阳形成"天下舟船所集，常万余艘"的繁荣景象。唐玄宗时期修整频率大大增加。'},
+      {t:'m',x:'整理自全汉昇《唐宋帝国与运河》等\n\n唐朝帝王修整大运河情况表',img:null},
+      {t:'a',x:'【过渡】唐朝经历了太宗、高宗、武则天、玄宗等多任皇帝，出现盛世局面。\n\n【任务】阅读书本，完成表格填写。\n\n【讲述】太宗李世民轻徭薄赋、知人善任，出现"贞观之治"。武则天重视发展生产。唐玄宗选贤任能、改革吏治，出现"开元盛世"。\n\n【问题】概括唐前期帝王们治理措施的共同特点。'},
+      {t:'m',x:'▲唐朝前期疆域和边疆各族分布图',img:null},
+      {t:'a',x:'【任务】阅读书本结合地图梳理唐朝安边的历程。\n\n【讲述】北方面对突厥：太宗灭东突厥，设安西都护府；武则天设北庭都护府；玄宗平后突厥。西南面对吐蕃：文成公主入藏，唐蕃会盟。东北靺鞨族：玄宗册封大祚荣。西北回纥：玄宗册封首领。'},
+      {t:'m',x:'中国百姓，实天下之根本。四夷之人，乃同枝叶。扰其根本以厚枝叶，而求义安，末之有也。\n——【唐】吴兢《贞观政要·安边第三十六》\n\n开元天宝年间的运河对于大唐帝国所尽的任务，比过去更为重大……大唐帝国便成为一个真正的统一的整体，力量无比雄厚。\n——全汉昇《唐宋帝国与运河》',img:null},
+      {t:'a',x:'【问题】阅读上述材料，思考唐朝能够成功安边的原因有哪些？\n\n（学生思考、讨论、回答）\n\n【讲授】开明的民族政策、运河沟通大唐帝国成为整体、以及唐朝本身国力强盛。'},
+      {t:'i',x:'通过表格梳理，让学生了解唐朝治理措施。通过概括共同特点，加深理解。\n\n借助地图帮助学生梳理安边措施，了解民族交融进一步发展的表现，培养时空观念。'}
+    ]},
+    {name:'运河塞，现唐末乱象',blocks:[
+      {t:'a',x:'【过渡】唐肃宗时期大运河因年久失修出现淤塞。唐僖宗时期出现决堤断绝。\n\n【问题】思考在这个时期发生了哪两场影响巨大的动乱？\n\n【讲述】安史之乱和黄巢起义。'},
+      {t:'m',x:'朝事付之宰相，边事付之诸将。\n——司马光《资治通鉴》',img:null},
+      {t:'a',x:'【讲述】"朝事付之宰相"——李林甫口蜜腹剑，杨国忠飞扬跋扈，中央政治腐败。\n\n"边事付之诸将"——节度使掌握土地、人民、兵甲、财赋，出现外重内轻局面。'},
+      {t:'m',x:'（节度使）既有其土地，又有其人民，又有其兵甲，又有其财赋。\n——宋祁、欧阳修等《新唐书》\n\n▲唐中后期节度使分布图',img:null},
+      {t:'a',x:'【讲述】755年安禄山起兵，安史之乱历时八年，大大消耗国力。此后藩镇割据。875年黄巢起义波及大半个中国。907年朱温废唐称帝，唐朝灭亡。'},
+      {t:'i',x:'借助材料帮助学生理解唐中后期中央和地方状况，理解安史之乱爆发原因，培养历史解释能力。\n\n通过地图结合材料，让学生理解藩镇特点及影响，了解黄巢起义后唐朝灭亡。'}
+    ]},
+    {name:'运河断，历五代十国',blocks:[
+      {t:'a',x:'【讲授】五代指黄河流域次第更迭的后梁、后唐、后晋、后汉、后周。十国指五代之外先后并立的割据政权。\n\n【设问】根据地图和表格，指出五代十国的政权特点。'},
+      {t:'m',x:'▲唐末藩镇割据地图 / 五代十国地图 / 五代十国开国君主即位前官职表',img:null},
+      {t:'a',x:'【讲述】五代十国是唐末藩镇割据的延续。周世宗通过治理运河提升实力，为北宋结束分裂奠定基础。分裂中孕育统一因素，统一是必然趋势。'},
+      {t:'i',x:'通过地图和表格，让学生理解五代十国的性质是唐末藩镇割据的延续。让学生了解大运河仍占重要地位，明白分裂中孕育统一因素。'}
+    ]},
+    {name:'课堂收束',blocks:[
+      {t:'a',x:'【讲述】再回头看皮日休的《汴河怀古》，大运河将大唐帝国连成一个真正统一的整体，使其力量无比雄厚。而其淤塞和断流，又折射出唐朝的衰亡和五代十国的政治乱象。\n\n运河水还在滚滚流淌，王朝还在迭代。下节课我们继续顺着滚滚河水，一起学习后面的内容。'},
+      {t:'i',x:'回到《汴河怀古》，让学生进一步理解"共禹论功不较多"的真正含义。首尾呼应，升华教学立意。引入下一节课学习。'}
+    ]}
+  ];
+  S.sum={con:'本课以大运河为主线，串联隋朝兴亡、唐朝盛世、唐末乱象与五代十国四个阶段。大运河见证了近四百年的王朝兴衰，帮助学生从一条河流的视角理解历史发展的客观规律。',hw:'思考：在后世的宋元明清时期，大运河又经历了怎样的命运？它又是如何见证王朝兴亡的？',bd:'从隋唐盛世到五代十国\n├─ 隋朝（581-618）\n│   ├─ 开凿运河 ── 通南北\n│   └─ 滥用民力 ── 致灭亡\n├─ 唐朝（618-907）\n│   ├─ 贞观之治\n│   ├─ 开元盛世 ── 运河通\n│   ├─ 民族交融 ── 安边疆\n│   ├─ 安史之乱 ── 由盛转衰\n│   └─ 藩镇割据 / 黄巢起义\n└─ 五代十国\n    └─ 藩镇割据的延续 ── 统一趋势',bi:null,ref:''};
+  gS(0);tst('已加载《大运河》示例数据','ok');
+}
+
+init();
+</script>
+</body>
+</html>

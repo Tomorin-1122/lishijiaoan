@@ -320,7 +320,7 @@ async function expPDF(){
   await document.fonts.ready;
 
   const ct=document.createElement('div');
-  ct.style.cssText='position:absolute;left:0;top:0;z-index:-1;width:794px;background:#fff;';
+  ct.style.cssText='position:absolute;left:0;top:0;z-index:9999;visibility:hidden;width:794px;background:#fff;';
   ct.innerHTML=docHTML();
   document.body.appendChild(ct);
 

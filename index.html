@@ -85,6 +85,54 @@
             --c-jade-rgb: 122, 108, 46;
         }
 
+        /* 墨韵 (沉稳黑灰) */
+        [data-theme="ink"] {
+            --c-parchment: #F5F5F5;
+            --c-ink: #1A1A1A;
+            --c-jade: #4A4A4A;
+            --c-jade-light: #E8E8E8;
+            --c-terracotta: #8B0000;
+            --c-terracotta-light: #F0E6E6;
+            --c-stone: #B8B8B8;
+            --c-jade-rgb: 74, 74, 74;
+        }
+
+        /* 藏蓝 (深邃蓝) */
+        [data-theme="navy"] {
+            --c-parchment: #F0F2F5;
+            --c-ink: #1E293B;
+            --c-jade: #334155;
+            --c-jade-light: #E2E8F0;
+            --c-terracotta: #7C2D12;
+            --c-terracotta-light: #FEF3E2;
+            --c-stone: #94A3B8;
+            --c-jade-rgb: 51, 65, 85;
+        }
+
+        /* 黛绿 (古典绿) */
+        [data-theme="darkgreen"] {
+            --c-parchment: #F4F6F4;
+            --c-ink: #1F2923;
+            --c-jade: #2D4A3E;
+            --c-jade-light: #DCE8E3;
+            --c-terracotta: #8B4513;
+            --c-terracotta-light: #F5EBE0;
+            --c-stone: #A8B5A8;
+            --c-jade-rgb: 45, 74, 62;
+        }
+
+        /* 紫檀 (典雅紫) */
+        [data-theme="purple"] {
+            --c-parchment: #F8F5F9;
+            --c-ink: #2D1F3D;
+            --c-jade: #5B4A6B;
+            --c-jade-light: #ECE6F0;
+            --c-terracotta: #8B3A3A;
+            --c-terracotta-light: #F5E6E6;
+            --c-stone: #B8A8B8;
+            --c-jade-rgb: 91, 74, 107;
+        }
+
         body { font-family: 'Noto Sans SC', sans-serif; background-color: var(--c-parchment); color: var(--c-ink); }
         
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -170,15 +218,21 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
                     配色
                 </button>
-                <div v-if="showThemeMenu" class="absolute right-0 mt-2 w-36 bg-white border border-stone rounded shadow-lg z-20 py-1">
+                <div v-if="showThemeMenu" class="absolute right-0 mt-2 w-40 bg-white border border-stone rounded shadow-lg z-20 py-1">
                     <button @click="changeTheme('default')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">松花</button>
                     <button @click="changeTheme('indigo')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">靛青</button>
                     <button @click="changeTheme('carmine')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">胭脂</button>
                     <button @click="changeTheme('qiuxiang')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">秋香</button>
+                    <div class="border-t border-stone/30 my-1"></div>
+                    <button @click="changeTheme('ink')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">墨韵</button>
+                    <button @click="changeTheme('navy')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">藏蓝</button>
+                    <button @click="changeTheme('darkgreen')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">黛绿</button>
+                    <button @click="changeTheme('purple')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">紫檀</button>
                 </div>
             </div>
 
             <button @click="loadExample" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition">导入示例</button>
+            <button @click="loadAcademicTemplate" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition">学术模板</button>
             <button @click="exportPDF" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-jade border border-jade rounded hover:bg-jade-light transition flex items-center gap-1 md:gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 导出 PDF
@@ -819,6 +873,64 @@
                 };
             };
 
+            // ---------- 沉稳学术风格模板 ----------
+            const loadAcademicTemplate = () => {
+                if (!confirm("加载沉稳学术风格模板将覆盖当前内容，是否继续？")) return;
+                
+                doc.basicInfo = { title: '函数的单调性与最值', subject: '数学', grade: '高一', author: '示例教师', type: '概念课' };
+                doc.macroDesign = {
+                    intent: '本课以培养学生数学抽象与逻辑推理素养为核心，通过严谨的数学语言描述函数单调性，引导学生经历从直观感知到形式化定义的完整过程。',
+                    textbookAnalysis: '本课选自人教 A 版必修第一册第三章第二节，是函数性质的核心内容。单调性是研究函数变化规律的基础工具，为后续学习导数及其应用奠定基础。',
+                    studentAnalysis: '学生在初中已接触过函数图像的上升下降趋势，但缺乏严格的数学语言表达。从图形直观过渡到符号表示是学生的认知难点。',
+                    objectives: [
+                        { id: generateId(), text: '理解函数单调性的概念，能用符号语言准确表述增函数与减函数。（数学抽象）' },
+                        { id: generateId(), text: '掌握用定义法证明函数单调性的步骤，并能应用于简单函数。（逻辑推理）' },
+                        { id: generateId(), text: '体会数形结合思想，感受数学语言的精确性与简洁美。（数学素养）' }
+                    ],
+                    keyPoints: '函数单调性的概念及其符号表示；用定义法证明函数单调性。',
+                    difficultPoints: '从图形直观抽象出单调性的代数定义；理解任意 x₁,x₂ 的含义及大小关系对结论的影响。'
+                };
+                
+                doc.flow = [
+                    {
+                        id: generateId(),
+                        name: '一、问题引入',
+                        steps: [
+                            { id: generateId(), type: 'activity', content: '【PPT 展示】展示某地一天内气温随时间变化的曲线图\n\n【设问】观察图像，气温在哪些时间段逐渐升高？在哪些时间段逐渐降低？', studentActivity: '观察图像，独立思考后回答' },
+                            { id: generateId(), type: 'activity', content: '【讲述】我们用"上升""下降"描述了气温的变化趋势。在数学中，如何精确地刻画函数值的这种变化规律？这就是我们今天要研究的函数单调性。', studentActivity: '倾听，思考' }
+                        ],
+                        intent: '从生活实例出发，激活学生的已有经验，自然引出课题。'
+                    },
+                    {
+                        id: generateId(),
+                        name: '二、概念探究',
+                        steps: [
+                            { id: generateId(), type: 'activity', content: '【PPT 展示】函数 y = x² 的图像\n\n【设问】在 y 轴右侧，随着 x 的增大，y 的值如何变化？能否用具体的数值来说明？', studentActivity: '观察、计算、回答' },
+                            { id: generateId(), type: 'activity', content: '【讲述】当 x=1 时，y=1；当 x=2 时，y=4；当 x=3 时，y=9。我们发现：x 越大，y 也越大。如何用数学语言精确描述这一规律？', studentActivity: '尝试用自己的语言描述' },
+                            { id: generateId(), type: 'activity', content: '【讲授】对于区间 (0,+∞) 内的任意两个值 x₁,x₂，当 x₁<x₂ 时，都有 f(x₁)<f(x₂)，我们就说函数在 (0,+∞) 上是增函数。', studentActivity: '记录定义，理解关键词' },
+                            { id: generateId(), type: 'material', contentType: 'text', content: '增函数定义：\n设函数 f(x) 的定义域为 I，如果对于定义域 I 内某个区间 D 上的任意两个自变量的值 x₁,x₂，当 x₁<x₂ 时，都有 f(x₁)<f(x₂)，那么就说函数 f(x) 在区间 D 上是增函数。', imageUrl: '', imageCaption: '', align: 'center' }
+                        ],
+                        intent: '通过具体函数引导学生经历从特殊到一般的抽象过程，理解单调性定义的本质。'
+                    },
+                    {
+                        id: generateId(),
+                        name: '三、应用深化',
+                        steps: [
+                            { id: generateId(), type: 'activity', content: '【任务】证明函数 f(x) = 2x + 1 在 R 上是增函数\n\n【讲述】请同学们尝试用刚才学习的定义进行证明。', studentActivity: '独立证明，小组交流' },
+                            { id: generateId(), type: 'activity', content: '【讲授】证明步骤：①取值：任取 x₁,x₂∈R，且 x₁<x₂；②作差：f(x₁)-f(x₂)；③变形：化简差式；④定号：判断差的正负；⑤下结论。', studentActivity: '对照完善自己的证明' },
+                            { id: generateId(), type: 'material', contentType: 'text', content: '规范证明：\n任取 x₁,x₂∈R，且 x₁<x₂\nf(x₁)-f(x₂) = (2x₁+1)-(2x₂+1) = 2(x₁-x₂)\n∵x₁<x₂  ∴x₁-x₂<0\n∴f(x₁)-f(x₂)<0，即 f(x₁)<f(x₂)\n∴f(x) 在 R 上是增函数', imageUrl: '', imageCaption: '', align: 'left' }
+                        ],
+                        intent: '通过典型例题规范证明步骤，培养学生的逻辑推理能力。'
+                    }
+                ];
+                
+                doc.summary = {
+                    classSummary: '本节课我们从直观图形出发，抽象出函数单调性的精确定义，并掌握了用定义法证明单调性的基本步骤。这是数学研究中从感性到理性、从具体到抽象的典型过程。',
+                    boardDesign: { type: 'text', content: '§3.2 函数的单调性\n\n一、增函数定义\n  ∀x₁,x₂∈D, x₁<x₂ ⇒ f(x₁)<f(x₂)\n\n二、证明步骤\n  取值→作差→变形→定号→结论', imageUrl: '' },
+                    reflection: '概念形成过程中应给予学生更多思考时间，部分学生对"任意"的理解仍需加强。'
+                };
+            };
+
             const initialized = loadDraft();
             if (!initialized) {
                 addSection();
@@ -829,7 +941,7 @@
                 materialIndexMap, stepRefs, setStepRef, getMaterialIndex,
                 addObjective, removeObjective, addSection, removeSection,
                 addStep, removeStep, insertMaterial, insertTag, formatActivity,
-                handleImageUpload, handleBoardImageUpload, exportPDF, loadExample,
+                handleImageUpload, handleBoardImageUpload, exportPDF, loadExample, loadAcademicTemplate,
                 showThemeMenu, changeTheme, showClearConfirm, clearAll
             };
         }

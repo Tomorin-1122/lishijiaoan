@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>教学设计工坊</title>
     
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vuedraggable@4.1.0/dist/vuedraggable.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -37,7 +38,7 @@
     </script>
 
     <style>
-        /* 默认主题：松花 (国风绿意) */
+        /* ===== 配色主题 ===== */
         :root {
             --c-parchment: #F7F9F4;
             --c-ink: #2C3E2C;
@@ -48,52 +49,63 @@
             --c-stone: #B8C4B0;
             --c-jade-rgb: 46, 92, 56;
         }
-
-        /* 靛青 (青花蓝) */
         [data-theme="indigo"] {
-            --c-parchment: #F4F5F9;
-            --c-ink: #1F2937;
-            --c-jade: #2E4B6E;
-            --c-jade-light: #E0E7F1;
-            --c-accent: #7B6B8D;        
-            --c-accent-light: #D6E8EC;  
-            --c-stone: #C1C9D6;
-            --c-jade-rgb: 46, 75, 110;
+            --c-parchment: #F4F5F9; --c-ink: #1F2937;
+            --c-jade: #2E4B6E; --c-jade-light: #E0E7F1;
+            --c-terracotta: #7B6B8D; --c-terracotta-light: #D6E8EC;
+            --c-stone: #C1C9D6; --c-jade-rgb: 46, 75, 110;
         }
-
-        /* 胭脂 (朱砂红) */
         [data-theme="carmine"] {
-            --c-parchment: #FAF5F5;
-            --c-ink: #3C1F1F;
-            --c-jade: #9B1D3A;
-            --c-jade-light: #F5E1E8;
-            --c-terracotta: #2B5B84;
-            --c-terracotta-light: #E1EDF7;
-            --c-stone: #D1BFC4;
-            --c-jade-rgb: 155, 29, 58;
+            --c-parchment: #FAF5F5; --c-ink: #3C1F1F;
+            --c-jade: #9B1D3A; --c-jade-light: #F5E1E8;
+            --c-terracotta: #2B5B84; --c-terracotta-light: #E1EDF7;
+            --c-stone: #D1BFC4; --c-jade-rgb: 155, 29, 58;
+        }
+        [data-theme="qiuxiang"] {
+            --c-parchment: #FAF8F0; --c-ink: #3C2F1E;
+            --c-jade: #7A6C2E; --c-jade-light: #F0EBD1;
+            --c-terracotta: #A0522D; --c-terracotta-light: #F5E6DF;
+            --c-stone: #CFC3A8; --c-jade-rgb: 122, 108, 46;
         }
 
-        /* 秋香 (古雅黄) */
-        [data-theme="qiuxiang"] {
-            --c-parchment: #FAF8F0;
-            --c-ink: #3C2F1E;
-            --c-jade: #7A6C2E;
-            --c-jade-light: #F0EBD1;
-            --c-terracotta: #A0522D;
-            --c-terracotta-light: #F5E6DF;
-            --c-stone: #CFC3A8;
-            --c-jade-rgb: 122, 108, 46;
+        /* ===== 编辑面板 section 卡片化 ===== */
+        .editor-section {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--c-stone);
+            border-radius: 10px;
+            padding: 16px 18px;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .editor-section:hover {
+            box-shadow: 0 2px 12px rgba(var(--c-jade-rgb), 0.08);
+            border-color: var(--c-jade);
+        }
+
+        /* ===== 输入框微交互 ===== */
+        .editor-panel input, .editor-panel textarea, .editor-panel select {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.15s ease;
+        }
+        .editor-panel input:hover, .editor-panel textarea:hover, .editor-panel select:hover {
+            border-color: var(--c-jade);
+        }
+
+        /* ===== 暗色模式 (Tokyo Night) ===== */
+        [data-dark="true"] {
+            --dk-bg: #1a1b26; --dk-surface: #24283b; --dk-surface2: #2f3349;
+            --dk-border: #3b4261; --dk-text: #c0caf5; --dk-muted: #565f89;
+            --dk-glow-jade: rgba(122, 162, 247, 0.15);
+            --dk-glow-terra: rgba(247, 118, 142, 0.12);
         }
 
         body { font-family: 'Noto Sans SC', sans-serif; background-color: var(--c-parchment); color: var(--c-ink); }
-        
+        [data-dark="true"] body { background-color: var(--dk-bg); }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--c-stone); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--c-jade); }
 
         @page { size: A4; margin: 2cm 2.5cm; }
-        
         @media print {
             html, body { height: auto; margin: 0; padding: 0; background: white; }
             #app { height: auto !important; }
@@ -114,32 +126,30 @@
             th, td { border: 1px solid var(--c-ink); padding: 8px; }
             thead { display: table-header-group; }
             tfoot { display: table-footer-group; }
-            .bg-terracotta-light, .bg-parchment, .bg-jade-light { 
-                -webkit-print-color-adjust: exact; print-color-adjust: exact; 
-            }
+            .bg-terracotta-light, .bg-parchment, .bg-jade-light { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
 
-        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
-        .fade-enter-from, .fade-leave-to { opacity: 0; }
-        
         input:focus, textarea:focus, select:focus {
             outline: none; border-color: var(--c-jade); box-shadow: 0 0 0 2px rgba(var(--c-jade-rgb), 0.2);
         }
 
+        /* ===== 移动端响应 ===== */
         @media (max-width: 1024px) {
             .editor-panel { width: 100% !important; }
-            .preview-panel { display: none; }
-            .preview-panel.active { display: flex; }
+            .editor-panel.hidden-mobile { display: none !important; }
+            .preview-panel { display: none !important; }
+            .preview-panel.active { display: flex !important; width: 100% !important; }
+            /* 修复：移动端拖拽把手始终可见 */
+            .drag-handle-step { opacity: 0.5 !important; }
         }
 
         .print-area {
             background-image: linear-gradient(to bottom, transparent 296.5mm, #e5e7eb 296.5mm, #e5e7eb 297.5mm, transparent 297.5mm);
             background-size: 100% 297mm;
-            border-left: 1px solid #e5e7eb;
-            border-right: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb; border-right: 1px solid #e5e7eb;
         }
 
-        .drag-handle { cursor: move; touch-action: none; }
+        .drag-handle { cursor: move; touch-action: none; user-select: none; }
         .drag-handle:hover { color: var(--c-jade); }
         .sortable-ghost { opacity: 0.4; background: var(--c-jade-light); }
 
@@ -151,6 +161,83 @@
             background: var(--c-parchment); border-radius: 12px; padding: 28px;
             max-width: 380px; margin: 0 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
+
+        /* ===== 暗色模式覆盖 ===== */
+        [data-dark="true"] header { background-color: var(--dk-bg) !important; border-color: var(--dk-border) !important; }
+        [data-dark="true"] header .text-jade { color: #7aa2f7 !important; }
+        [data-dark="true"] header .text-ink { color: var(--dk-text) !important; }
+        [data-dark="true"] header .text-stone { color: var(--dk-muted) !important; }
+        [data-dark="true"] header .bg-parchment { background-color: var(--dk-surface) !important; }
+        [data-dark="true"] header .bg-parchment:hover { background-color: var(--dk-surface2) !important; }
+        [data-dark="true"] header .bg-jade-light { background-color: #1e2a38 !important; }
+        [data-dark="true"] header .border-stone { border-color: var(--dk-border) !important; }
+
+        [data-dark="true"] .editor-panel { background-color: var(--dk-bg) !important; border-color: var(--dk-border) !important; }
+        [data-dark="true"] .editor-panel h2 { color: #7aa2f7 !important; border-color: var(--dk-border) !important; }
+        [data-dark="true"] .editor-panel label { color: var(--dk-muted) !important; }
+        [data-dark="true"] .editor-panel .text-ink { color: var(--dk-text) !important; }
+        [data-dark="true"] .editor-panel .text-stone { color: var(--dk-muted) !important; }
+        [data-dark="true"] .editor-panel .text-jade { color: #7aa2f7 !important; }
+        [data-dark="true"] .editor-panel .text-terracotta { color: #f7768e !important; }
+        [data-dark="true"] .editor-panel .border-stone { border-color: var(--dk-border) !important; }
+        [data-dark="true"] .editor-panel .border-jade { border-color: #7aa2f7 !important; }
+        [data-dark="true"] .editor-panel .border-terracotta { border-color: #f7768e !important; }
+        [data-dark="true"] .editor-panel .bg-parchment { background-color: var(--dk-surface) !important; }
+        [data-dark="true"] .editor-panel .bg-white { background-color: var(--dk-surface2) !important; }
+        [data-dark="true"] .editor-panel .bg-jade-light { background-color: #1e2a38 !important; }
+        [data-dark="true"] .editor-panel .bg-terracotta-light { background-color: #2a1e2e !important; }
+        [data-dark="true"] .editor-panel input,
+        [data-dark="true"] .editor-panel textarea,
+        [data-dark="true"] .editor-panel select {
+            background-color: var(--dk-surface) !important; color: var(--dk-text) !important; border-color: var(--dk-border) !important;
+        }
+        [data-dark="true"] .editor-panel input:focus,
+        [data-dark="true"] .editor-panel textarea:focus,
+        [data-dark="true"] .editor-panel select:focus {
+            border-color: #7aa2f7 !important; box-shadow: 0 0 0 2px rgba(122, 162, 247, 0.2) !important;
+        }
+        [data-dark="true"] .editor-panel .bg-jade { background-color: #7aa2f7 !important; }
+        [data-dark="true"] .editor-panel .hover\:bg-jade-light:hover { background-color: #1e2a38 !important; }
+        [data-dark="true"] .editor-panel .hover\:bg-stone:hover { background-color: var(--dk-surface2) !important; }
+        [data-dark="true"] .editor-panel .hover\:bg-terracotta-light:hover { background-color: #2a1e2e !important; }
+
+        [data-dark="true"] .modal-overlay .modal-box { background-color: var(--dk-surface); color: var(--dk-text); }
+        [data-dark="true"] .modal-overlay .text-ink { color: var(--dk-text) !important; }
+        [data-dark="true"] .modal-overlay .border-stone { border-color: var(--dk-border) !important; }
+        [data-dark="true"] .modal-overlay .hover\:bg-stone\/10:hover { background-color: var(--dk-surface2) !important; }
+
+        [data-dark="true"] .editor-panel .drag-handle { color: var(--dk-muted); }
+        [data-dark="true"] .editor-panel .drag-handle:hover { color: #7aa2f7; }
+        [data-dark="true"] .editor-panel .sortable-ghost { background: #1e2a38 !important; }
+
+        /* ===== 暗色模式增强：卡片 + 材料框 + 设计意图框 ===== */
+        [data-dark="true"] .editor-section {
+            background: var(--dk-surface) !important;
+            border-color: var(--dk-border) !important;
+        }
+        [data-dark="true"] .editor-section:hover {
+            box-shadow: 0 2px 16px var(--dk-glow-jade) !important;
+        }
+        [data-dark="true"] .preview-panel .bg-parchment {
+            background-color: var(--dk-surface) !important;
+        }
+        /* 材料框：发光边框 */
+        [data-dark="true"] .preview-panel .border.border-stone.bg-parchment {
+            border-color: #7aa2f7 !important;
+            box-shadow: 0 0 8px var(--dk-glow-jade), inset 0 0 6px rgba(122, 162, 247, 0.05);
+        }
+        /* 设计意图框：暖色发光 */
+        [data-dark="true"] .preview-panel .bg-terracotta-light {
+            background-color: #2a1e2e !important;
+            border-color: #f7768e !important;
+            box-shadow: 0 0 8px var(--dk-glow-terra), inset 0 0 6px rgba(247, 118, 142, 0.05);
+        }
+        /* 编辑面板中的设计意图框 */
+        [data-dark="true"] .editor-panel .bg-terracotta-light {
+            background-color: #2a1e2e !important;
+            border-color: #f7768e !important;
+            box-shadow: 0 0 8px var(--dk-glow-terra), inset 0 0 6px rgba(247, 118, 142, 0.05);
+        }
     </style>
 </head>
 <body class="h-screen overflow-hidden">
@@ -159,140 +246,137 @@
     <!-- 顶部导航 -->
     <header class="no-print flex items-center justify-between border-b border-stone bg-white px-4 md:px-6 py-2 md:py-3 z-10 flex-wrap gap-2">
         <div class="flex items-center gap-2 md:gap-3">
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-jade" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 18 16.5 18c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-jade" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 18 16.5 18c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <h1 class="text-lg md:text-xl font-bold font-serif text-jade">教学设计工坊</h1>
         </div>
-        <div class="flex gap-2 md:gap-3 items-center">
-            <button @click="toggleMobilePreview" class="md:hidden px-3 py-1 text-xs font-medium bg-jade-light text-jade rounded border border-jade">预览</button>
-            
-            <div class="relative">
-                <button @click="showThemeMenu = !showThemeMenu" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+        <div class="flex gap-1 md:gap-2 items-center flex-wrap">
+            <button @click="toggleMobilePreview" class="md:hidden px-3 py-1 text-xs font-medium bg-jade-light text-jade rounded border border-jade" :aria-label="showMobilePreview ? '返回编辑' : '预览文档'">
+                {{ showMobilePreview ? '编辑' : '预览' }}
+            </button>
+
+            <!-- 暗色模式切换 -->
+            <button @click="toggleDarkMode" class="p-1.5 md:p-2 rounded hover:bg-stone/20 transition" :aria-label="isDarkMode ? '切换为亮色模式' : '切换为暗色模式'" :title="isDarkMode ? '亮色模式' : '暗色模式'">
+                <svg v-if="!isDarkMode" class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:#fde68a"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            </button>
+
+            <!-- 撤销 / 重做 -->
+            <div class="flex items-center gap-0.5 border-l border-stone/40 pl-1 md:pl-2 ml-0.5 md:ml-1">
+                <button @click="undo" :disabled="undoStack.length === 0" class="p-1.5 md:p-2 rounded hover:bg-stone/20 disabled:opacity-25 disabled:cursor-not-allowed transition" aria-label="撤销" title="撤销 (Ctrl+Z)">
+                    <svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+                </button>
+                <button @click="redo" :disabled="redoStack.length === 0" class="p-1.5 md:p-2 rounded hover:bg-stone/20 disabled:opacity-25 disabled:cursor-not-allowed transition" aria-label="重做" title="重做 (Ctrl+Shift+Z)">
+                    <svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/></svg>
+                </button>
+            </div>
+
+            <!-- 配色 -->
+            <div class="relative" ref="themeMenuRef">
+                <button @click.stop="showThemeMenu = !showThemeMenu" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition flex items-center gap-1" aria-haspopup="true" :aria-expanded="showThemeMenu">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
                     配色
                 </button>
-                <div v-if="showThemeMenu" class="absolute right-0 mt-2 w-36 bg-white border border-stone rounded shadow-lg z-20 py-1">
-                    <button @click="changeTheme('default')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">松花</button>
-                    <button @click="changeTheme('indigo')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">靛青</button>
-                    <button @click="changeTheme('carmine')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">胭脂</button>
-                    <button @click="changeTheme('qiuxiang')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink">秋香</button>
+                <div v-if="showThemeMenu" class="absolute right-0 mt-2 w-36 bg-white border border-stone rounded shadow-lg z-20 py-1" role="menu" aria-label="选择配色主题">
+                    <button @click="changeTheme('default')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink" role="menuitem">松花</button>
+                    <button @click="changeTheme('indigo')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink" role="menuitem">靛青</button>
+                    <button @click="changeTheme('carmine')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink" role="menuitem">胭脂</button>
+                    <button @click="changeTheme('qiuxiang')" class="block w-full text-left px-4 py-2 text-sm hover:bg-jade-light text-ink" role="menuitem">秋香</button>
                 </div>
             </div>
 
-            <button @click="loadExample" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition">导入示例</button>
-            <button @click="exportPDF" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-jade border border-jade rounded hover:bg-jade-light transition flex items-center gap-1 md:gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                导出 PDF
+            <button @click="loadExample" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition" aria-label="导入示例教学设计">导入示例</button>
+
+            <!-- JSON 导入 / 导出 -->
+            <button @click="importJSON" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition" aria-label="从JSON文件导入教学设计">导入JSON</button>
+            <button @click="exportJSON" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-ink bg-parchment rounded hover:bg-stone transition" aria-label="将教学设计导出为JSON文件">导出JSON</button>
+
+            <button @click="exportPDF" class="px-3 md:px-4 py-1 md:py-2 text-sm font-medium text-jade border border-jade rounded hover:bg-jade-light transition flex items-center gap-1 md:gap-2" aria-label="导出为PDF文件">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                PDF
             </button>
         </div>
-        <div v-if="draftStatus" class="w-full text-xs text-stone italic border-t border-stone/30 pt-1 mt-1">{{ draftStatus }}</div>
+        <div v-if="draftStatus" class="w-full text-xs text-stone italic border-t border-stone/30 pt-1 mt-1" role="status" aria-live="polite">{{ draftStatus }}</div>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative">
         <!-- 左侧编辑面板 -->
-        <aside class="no-print editor-panel w-full md:w-2/5 border-r border-stone bg-white overflow-y-auto p-4 md:p-6 space-y-6">
+        <aside class="no-print editor-panel w-full md:w-2/5 border-r border-stone bg-white overflow-y-auto p-4 md:p-6 space-y-6" :class="{ 'hidden-mobile': showMobilePreview }">
             
             <!-- 基础信息 -->
-            <section>
-                <h2 class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">基础信息</h2>
+            <section aria-labelledby="section-basic" class="editor-section">
+                <h2 id="section-basic" class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">基础信息</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
                         <label for="titleInput" class="block text-xs font-medium text-ink mb-1">课题名称</label>
-                        <input type="text" id="titleInput" v-model="doc.basicInfo.title" class="w-full border border-stone rounded px-3 py-2 text-sm">
+                        <input type="text" id="titleInput" v-model="doc.basicInfo.title" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="请输入课题名称">
                     </div>
-                    <div>
-                        <label for="subjectInput" class="block text-xs font-medium text-ink mb-1">学科</label>
-                        <input type="text" id="subjectInput" v-model="doc.basicInfo.subject" class="w-full border border-stone rounded px-3 py-2 text-sm">
-                    </div>
-                    <div>
-                        <label for="gradeInput" class="block text-xs font-medium text-ink mb-1">年级</label>
-                        <input type="text" id="gradeInput" v-model="doc.basicInfo.grade" class="w-full border border-stone rounded px-3 py-2 text-sm">
-                    </div>
-                    <div>
-                        <label for="authorInput" class="block text-xs font-medium text-ink mb-1">作者</label>
-                        <input type="text" id="authorInput" v-model="doc.basicInfo.author" class="w-full border border-stone rounded px-3 py-2 text-sm">
-                    </div>
-                    <div>
-                        <label for="typeInput" class="block text-xs font-medium text-ink mb-1">课型</label>
-                        <input type="text" id="typeInput" v-model="doc.basicInfo.type" class="w-full border border-stone rounded px-3 py-2 text-sm">
-                    </div>
+                    <div><label for="subjectInput" class="block text-xs font-medium text-ink mb-1">学科</label><input type="text" id="subjectInput" v-model="doc.basicInfo.subject" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="如：历史"></div>
+                    <div><label for="gradeInput" class="block text-xs font-medium text-ink mb-1">年级</label><input type="text" id="gradeInput" v-model="doc.basicInfo.grade" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="如：高一"></div>
+                    <div><label for="authorInput" class="block text-xs font-medium text-ink mb-1">作者</label><input type="text" id="authorInput" v-model="doc.basicInfo.author" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="设计者姓名"></div>
+                    <div><label for="typeInput" class="block text-xs font-medium text-ink mb-1">课型</label><input type="text" id="typeInput" v-model="doc.basicInfo.type" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="如：新授课"></div>
                 </div>
             </section>
 
             <!-- 宏观设计 -->
-            <section>
-                <h2 class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">宏观设计</h2>
+            <section aria-labelledby="section-macro" class="editor-section">
+                <h2 id="section-macro" class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">宏观设计</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label for="intentTextarea" class="block text-xs font-medium text-ink mb-1">教学立意 (核心特色)</label>
-                        <textarea id="intentTextarea" v-model="doc.macroDesign.intent" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="textbookTextarea" class="block text-xs font-medium text-ink mb-1">教材分析</label>
-                        <textarea id="textbookTextarea" v-model="doc.macroDesign.textbookAnalysis" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                    </div>
-                    <div>
-                        <label for="studentTextarea" class="block text-xs font-medium text-ink mb-1">学情分析</label>
-                        <textarea id="studentTextarea" v-model="doc.macroDesign.studentAnalysis" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                    </div>
-                    
+                    <div><label for="intentTextarea" class="block text-xs font-medium text-ink mb-1">教学立意 (核心特色)</label><textarea id="intentTextarea" v-model="doc.macroDesign.intent" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="简述本课核心教学立意"></textarea></div>
+                    <div><label for="textbookTextarea" class="block text-xs font-medium text-ink mb-1">教材分析</label><textarea id="textbookTextarea" v-model="doc.macroDesign.textbookAnalysis" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="分析教材内容与编排意图"></textarea></div>
+                    <div><label for="studentTextarea" class="block text-xs font-medium text-ink mb-1">学情分析</label><textarea id="studentTextarea" v-model="doc.macroDesign.studentAnalysis" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="分析学生已有基础与学习困难"></textarea></div>
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-medium text-ink">教学目标 (分点)</label>
-                            <button @click="addObjective" class="text-jade text-xs hover:underline">+ 添加</button>
+                            <button @click="addObjective" class="text-jade text-xs hover:underline" aria-label="添加一条教学目标">+ 添加</button>
                         </div>
                         <div v-for="(obj, index) in doc.macroDesign.objectives" :key="obj.id" class="flex mb-2 gap-2">
-                            <span class="text-xs text-stone mt-2">{{ index + 1 }}.</span>
-                            <input type="text" :id="'objInput' + obj.id" v-model="obj.text" class="flex-1 border border-stone rounded px-3 py-2 text-sm">
-                            <button @click="removeObjective(index)" class="text-stone hover:text-terracotta">&times;</button>
+                            <span class="text-xs text-stone mt-2" aria-hidden="true">{{ index + 1 }}.</span>
+                            <input type="text" :id="'objInput' + obj.id" v-model="obj.text" class="flex-1 border border-stone rounded px-3 py-2 text-sm" :placeholder="'教学目标 ' + (index + 1)">
+                            <button @click="removeObjective(index)" class="text-stone hover:text-terracotta" :aria-label="'删除第' + (index + 1) + '条教学目标'">&times;</button>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="keyPointsTextarea" class="block text-xs font-medium text-ink mb-1">重点</label>
-                            <textarea id="keyPointsTextarea" v-model="doc.macroDesign.keyPoints" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                        </div>
-                        <div>
-                            <label for="difficultTextarea" class="block text-xs font-medium text-ink mb-1">难点</label>
-                            <textarea id="difficultTextarea" v-model="doc.macroDesign.difficultPoints" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                        </div>
+                        <div><label for="keyPointsTextarea" class="block text-xs font-medium text-ink mb-1">重点</label><textarea id="keyPointsTextarea" v-model="doc.macroDesign.keyPoints" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="教学重点"></textarea></div>
+                        <div><label for="difficultTextarea" class="block text-xs font-medium text-ink mb-1">难点</label><textarea id="difficultTextarea" v-model="doc.macroDesign.difficultPoints" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="教学难点"></textarea></div>
                     </div>
                 </div>
             </section>
 
             <!-- 教学流程 -->
-            <section>
+            <section aria-labelledby="section-flow" class="editor-section">
                 <div class="flex justify-between items-center border-b border-stone pb-2 mb-4">
-                    <h2 class="text-lg font-bold font-serif text-jade">教学流程</h2>
+                    <h2 id="section-flow" class="text-lg font-bold font-serif text-jade">教学流程</h2>
                 </div>
-
-                <draggable :list="doc.flow" item-key="id" handle=".drag-handle-section" class="space-y-4" ghost-class="sortable-ghost">
+                <draggable :list="doc.flow" item-key="id" handle=".drag-handle-section" class="space-y-4" ghost-class="sortable-ghost" animation="200">
                     <template #item="{ element: section, index: sIndex }">
                         <div class="border border-stone rounded p-4 bg-parchment">
                             <div class="flex justify-between items-center mb-3">
                                 <div class="flex items-center gap-2 flex-1">
-                                    <span class="drag-handle drag-handle-section text-stone hover:text-jade cursor-move text-lg">☰</span>
+                                    <span class="drag-handle drag-handle-section text-stone hover:text-jade cursor-move text-lg" aria-hidden="true">☰</span>
                                     <input type="text" :id="'sectionName' + section.id" v-model="section.name" placeholder="环节名称 (如：一、课堂导入)" class="flex-1 text-sm font-bold text-ink bg-transparent border-b border-transparent hover:border-stone focus:border-jade py-1">
                                 </div>
-                                <button @click="removeSection(sIndex)" class="text-stone hover:text-terracotta ml-4 text-sm">删除环节</button>
+                                <button @click="removeSection(sIndex)" class="text-stone hover:text-terracotta ml-4 text-sm" :aria-label="'删除环节：' + section.name">删除环节</button>
                             </div>
-
-                            <draggable :list="section.steps" item-key="id" handle=".drag-handle-step" class="space-y-3 mb-3" ghost-class="sortable-ghost">
+                            <draggable :list="section.steps" item-key="id" handle=".drag-handle-step" class="space-y-3 mb-3" ghost-class="sortable-ghost" animation="200">
                                 <template #item="{ element: step, index: stepIndex }">
-                                    <div class="bg-white p-3 rounded border border-stone relative group">
-                                        <span class="drag-handle drag-handle-step absolute top-1 left-1 md:left-[-10px] md:top-2 text-stone hover:text-jade opacity-0 group-hover:opacity-100 transition-opacity cursor-move">☰</span>
+                                    <div class="p-3 rounded border border-stone relative group">
+                                        <span class="drag-handle drag-handle-step absolute top-1 left-1 md:left-[-10px] md:top-2 text-stone hover:text-jade opacity-0 group-hover:opacity-100 transition-opacity cursor-move" aria-hidden="true">☰</span>
 
                                         <!-- 活动步骤 -->
-                                        <div v-if="step.type === 'activity'" class="pl-4 md:pl-5">
+                                        <div v-if="step.type === 'activity'" class="bg-white pl-4 md:pl-5">
                                             <div class="flex flex-wrap gap-1 mb-2 items-center">
-                                                <button v-for="tag in ['讲述', '设问', '讲授', '过渡', 'PPT展示', '板书', '任务']" :key="tag" @click="insertTag(section, stepIndex, tag)" class="px-2 py-0.5 text-xs rounded border border-stone hover:bg-jade-light hover:border-jade text-ink">{{ tag }}</button>
-                                                <button @click="insertMaterial(section.steps, stepIndex)" class="px-2 py-0.5 text-xs rounded border border-jade text-jade hover:bg-jade-light">+ 材料</button>
-                                                <button @click="removeStep(section, stepIndex)" class="px-2 py-0.5 text-xs rounded border border-stone hover:bg-terracotta-light hover:border-terracotta text-ink ml-auto">&times;</button>
+                                                <button v-for="tag in TAG_OPTIONS" :key="tag" @click="insertTag(section, stepIndex, tag)" class="px-2 py-0.5 text-xs rounded border border-stone hover:bg-jade-light hover:border-jade text-ink" :aria-label="'插入标签：' + tag">{{ tag }}</button>
+                                                <button @click="insertMaterial(section.steps, stepIndex)" class="px-2 py-0.5 text-xs rounded border border-jade text-jade hover:bg-jade-light" aria-label="在当前步骤后插入材料">+ 材料</button>
+                                                <button @click="removeStep(section, stepIndex)" class="px-2 py-0.5 text-xs rounded border border-stone hover:bg-terracotta-light hover:border-terracotta text-ink ml-auto" aria-label="删除此步骤">&times;</button>
                                             </div>
                                             <textarea :ref="el => setStepRef(el, section.id, step.id)" v-model="step.content" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm mb-2" placeholder="教师活动内容..."></textarea>
-                                            <div class="flex items-center gap-2">
+                                            <!-- 学生活动 + 预计时长 -->
+                                            <div class="flex items-center gap-2 flex-wrap">
                                                 <label :for="'studentAct' + step.id" class="text-xs text-stone">学生活动:</label>
-                                                <input type="text" :id="'studentAct' + step.id" v-model="step.studentActivity" class="flex-1 border border-stone rounded px-2 py-1 text-xs">
+                                                <input type="text" :id="'studentAct' + step.id" v-model="step.studentActivity" class="flex-1 min-w-[100px] border border-stone rounded px-2 py-1 text-xs" placeholder="描述学生在此环节的活动">
+                                                <label class="text-xs text-stone whitespace-nowrap">⏱</label>
+                                                <input type="number" v-model.number="step.duration" min="0" max="90" class="w-14 border border-stone rounded px-2 py-1 text-xs text-center" placeholder="0">
+                                                <span class="text-xs text-stone">分钟</span>
                                             </div>
                                         </div>
 
@@ -302,12 +386,10 @@
                                                 <span class="text-xs font-bold text-jade">材料 {{ getMaterialIndex(sIndex, stepIndex) }}</span>
                                                 <div class="flex gap-2">
                                                     <button @click="step.contentType = step.contentType === 'text' ? 'image' : 'text'" class="text-xs text-jade hover:underline">切换为{{ step.contentType === 'text' ? '图片' : '文本' }}</button>
-                                                    <button @click="removeStep(section, stepIndex)" class="text-xs text-terracotta hover:underline">&times;</button>
+                                                    <button @click="removeStep(section, stepIndex)" class="text-xs text-terracotta hover:underline" aria-label="删除此材料">&times;</button>
                                                 </div>
                                             </div>
-                                            
                                             <textarea v-if="step.contentType === 'text'" v-model="step.content" rows="3" class="w-full border border-jade rounded px-3 py-2 text-sm bg-white font-fangsong" placeholder="材料文本内容..."></textarea>
-                                            
                                             <div v-if="step.contentType === 'text'" class="flex items-center gap-2 mt-2">
                                                 <label :for="'alignSelect' + step.id" class="text-xs text-stone">对齐方式:</label>
                                                 <select :id="'alignSelect' + step.id" v-model="step.align" class="flex-1 border border-jade rounded px-2 py-1 text-xs bg-white">
@@ -316,12 +398,13 @@
                                                     <option value="right">右对齐</option>
                                                 </select>
                                             </div>
-
-                                            <div v-else class="text-sm text-stone">
-                                                <input type="file" accept="image/*" @change="handleImageUpload($event, step)" class="text-xs">
+                                            <!-- 图片模式：支持粘贴 -->
+                                            <div v-else class="text-sm text-stone" @paste="handlePasteImage($event, step)" tabindex="0">
+                                                <input type="file" accept="image/*" @change="handleImageUpload($event, step)" class="text-xs" :aria-label="'上传材料' + getMaterialIndex(sIndex, stepIndex) + '的图片'">
+                                                <p class="text-xs text-stone/60 mt-1">支持 Ctrl+V 粘贴图片</p>
                                                 <div v-if="step.imageUrl" class="mt-2 relative">
-                                                    <img :src="step.imageUrl" class="max-h-32 object-contain border border-stone">
-                                                    <button @click="step.imageUrl = ''; step.imageCaption = ''" class="absolute top-0 right-0 bg-white rounded-full p-1 shadow text-xs">&times;</button>
+                                                    <img :src="step.imageUrl" class="max-h-32 object-contain border border-stone" alt="材料配图">
+                                                    <button @click="step.imageUrl = ''; step.imageCaption = ''" class="absolute top-0 right-0 bg-white rounded-full p-1 shadow text-xs" aria-label="删除图片">&times;</button>
                                                 </div>
                                                 <div v-if="step.imageUrl" class="mt-2">
                                                     <input type="text" v-model="step.imageCaption" placeholder="图片说明文字（可选）" class="w-full border border-stone rounded px-2 py-1 text-xs">
@@ -331,15 +414,10 @@
                                     </div>
                                 </template>
                             </draggable>
-                            
-                            <div v-if="section.steps.length === 0" class="text-center py-4 border border-dashed border-stone rounded text-xs text-stone mb-3">
-                                暂无步骤，请点击下方按钮添加
-                            </div>
-
+                            <div v-if="section.steps.length === 0" class="text-center py-4 border border-dashed border-stone rounded text-xs text-stone mb-3">暂无步骤，请点击下方按钮添加</div>
                             <div class="flex gap-2 mt-2">
-                                <button @click="addStep(section, 'activity')" class="flex-1 px-3 py-1 text-xs border border-jade text-jade rounded hover:bg-jade-light">+ 教师活动</button>
+                                <button @click="addStep(section, 'activity')" class="flex-1 px-3 py-1 text-xs border border-jade text-jade rounded hover:bg-jade-light" aria-label="添加教师活动步骤">+ 教师活动</button>
                             </div>
-
                             <div class="mt-4 bg-terracotta-light border-l-4 border-terracotta p-3 rounded-r">
                                 <label :for="'intentTextarea' + section.id" class="block text-xs font-bold text-terracotta mb-1">设计意图</label>
                                 <textarea :id="'intentTextarea' + section.id" v-model="section.intent" rows="2" class="w-full bg-transparent border-none text-sm text-ink p-0 focus:outline-none focus:ring-0" placeholder="说明此环节的设计意图..."></textarea>
@@ -347,125 +425,104 @@
                         </div>
                     </template>
                 </draggable>
-
-                <button @click="addSection" class="w-full px-3 py-2 text-sm font-medium text-white bg-jade rounded hover:bg-opacity-90 mt-2">+ 添加环节</button>
+                <button @click="addSection" class="w-full px-3 py-2 text-sm font-medium text-white bg-jade rounded hover:bg-opacity-90 mt-2" aria-label="添加新的教学环节">+ 添加环节</button>
             </section>
 
             <!-- 总结与反馈 -->
-            <section>
-                <h2 class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">总结与反馈</h2>
+            <section aria-labelledby="section-summary" class="editor-section">
+                <h2 id="section-summary" class="text-lg font-bold font-serif text-jade border-b border-stone pb-2 mb-4">总结与反馈</h2>
                 <div class="space-y-4">
-                    <div>
-                        <label for="summaryTextarea" class="block text-xs font-medium text-ink mb-1">课堂总结</label>
-                        <textarea id="summaryTextarea" v-model="doc.summary.classSummary" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                    </div>
+                    <div><label for="summaryTextarea" class="block text-xs font-medium text-ink mb-1">课堂总结</label><textarea id="summaryTextarea" v-model="doc.summary.classSummary" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="对本课内容进行总结"></textarea></div>
                     <div>
                         <label class="block text-xs font-medium text-ink mb-1">板书设计</label>
-                        <div class="flex gap-2 mb-2">
-                            <button @click="doc.summary.boardDesign.type = 'text'" :class="doc.summary.boardDesign.type === 'text' ? 'bg-jade text-white' : 'bg-parchment text-ink'" class="px-3 py-1 text-xs rounded">文字</button>
-                            <button @click="doc.summary.boardDesign.type = 'image'" :class="doc.summary.boardDesign.type === 'image' ? 'bg-jade text-white' : 'bg-parchment text-ink'" class="px-3 py-1 text-xs rounded">图片</button>
+                        <div class="flex gap-2 mb-2" role="radiogroup" aria-label="板书设计类型">
+                            <button @click="doc.summary.boardDesign.type = 'text'" :class="doc.summary.boardDesign.type === 'text' ? 'bg-jade text-white' : 'bg-parchment text-ink'" class="px-3 py-1 text-xs rounded" role="radio" :aria-checked="doc.summary.boardDesign.type === 'text'">文字</button>
+                            <button @click="doc.summary.boardDesign.type = 'image'" :class="doc.summary.boardDesign.type === 'image' ? 'bg-jade text-white' : 'bg-parchment text-ink'" class="px-3 py-1 text-xs rounded" role="radio" :aria-checked="doc.summary.boardDesign.type === 'image'">图片</button>
                         </div>
-                        <textarea v-if="doc.summary.boardDesign.type === 'text'" v-model="doc.summary.boardDesign.content" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                        <div v-else>
-                            <input type="file" accept="image/*" @change="handleBoardImageUpload" class="text-xs mb-2">
+                        <textarea v-if="doc.summary.boardDesign.type === 'text'" v-model="doc.summary.boardDesign.content" rows="4" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="板书文字内容"></textarea>
+                        <!-- 板书图片：支持粘贴 -->
+                        <div v-else @paste="handlePasteBoardImage" tabindex="0">
+                            <input type="file" accept="image/*" @change="handleBoardImageUpload" class="text-xs mb-2" aria-label="上传板书设计图片">
+                            <p class="text-xs text-stone/60 mb-1">支持 Ctrl+V 粘贴图片</p>
                             <div v-if="doc.summary.boardDesign.imageUrl" class="relative inline-block">
-                                <img :src="doc.summary.boardDesign.imageUrl" class="max-h-40 object-contain border border-stone">
-                                <button @click="doc.summary.boardDesign.imageUrl = ''" class="absolute top-0 right-0 bg-white rounded-full p-1 shadow text-xs">&times;</button>
+                                <img :src="doc.summary.boardDesign.imageUrl" class="max-h-40 object-contain border border-stone" alt="板书设计图">
+                                <button @click="doc.summary.boardDesign.imageUrl = ''" class="absolute top-0 right-0 bg-white rounded-full p-1 shadow text-xs" aria-label="删除板书图片">&times;</button>
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <label for="reflectionTextarea" class="block text-xs font-medium text-ink mb-1">教学反思</label>
-                        <textarea id="reflectionTextarea" v-model="doc.summary.reflection" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm"></textarea>
-                    </div>
+                    <div><label for="reflectionTextarea" class="block text-xs font-medium text-ink mb-1">教学反思</label><textarea id="reflectionTextarea" v-model="doc.summary.reflection" rows="3" class="w-full border border-stone rounded px-3 py-2 text-sm" placeholder="课后反思与改进方向"></textarea></div>
                 </div>
             </section>
 
-            <!-- 清除所有按钮 -->
             <section class="pb-10">
-                <button @click="showClearConfirm = true" class="w-full px-3 py-2 text-sm font-medium text-terracotta border border-terracotta rounded hover:bg-terracotta-light transition">清除所有内容</button>
+                <button @click="handleClearAll" class="w-full px-3 py-2 text-sm font-medium text-terracotta border border-terracotta rounded hover:bg-terracotta-light transition" aria-label="清除所有已填写内容">清除所有内容</button>
             </section>
         </aside>
 
         <!-- 右侧预览面板 -->
-        <main class="flex-1 bg-stone overflow-y-auto p-4 md:p-8 flex flex-col items-center preview-panel" :class="{ 'active': showMobilePreview }">
+        <main class="flex-1 bg-stone overflow-y-auto p-4 md:p-8 flex flex-col items-center preview-panel" :class="{ 'active': showMobilePreview }" aria-label="教学设计预览">
+            <button v-if="showMobilePreview" @click="showMobilePreview = false" class="md:hidden fixed bottom-6 right-6 z-30 px-4 py-2 text-sm font-medium bg-jade text-white rounded-full shadow-lg hover:bg-opacity-90 transition" aria-label="返回编辑模式">← 返回编辑</button>
+
             <div class="print-area w-full md:w-[210mm] bg-white shadow-xl p-6 md:p-20 font-serif text-ink relative">
-                
-                <!-- 头部 -->
-                <div class="text-center mb-10 border-b-2 border-ink pb-4">
-                    <h1 class="text-2xl md:text-3xl font-bold mb-2">{{ doc.basicInfo.title || '课题名称' }}</h1>
+                <div class="text-center mb-10 pb-4" style="position:relative;">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:10px;">
+                        <span style="display:inline-block; width:48px; height:1px; background:var(--c-jade); opacity:0.5;"></span>
+                        <span style="font-size:11px; letter-spacing:0.15em; color:var(--c-stone); text-transform:uppercase;">教学设计</span>
+                        <span style="display:inline-block; width:48px; height:1px; background:var(--c-jade); opacity:0.5;"></span>
+                    </div>
+                    <h1 class="text-2xl md:text-3xl font-bold mb-3">{{ doc.basicInfo.title || '课题名称' }}</h1>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;">
+                        <span style="display:inline-block; width:16px; height:1px; background:var(--c-stone);"></span>
+                        <span style="display:inline-block; width:4px; height:4px; background:var(--c-jade); border-radius:50%;"></span>
+                        <span style="display:inline-block; width:16px; height:1px; background:var(--c-stone);"></span>
+                    </div>
                     <div class="text-xs md:text-sm text-stone flex justify-center gap-4 md:gap-6 flex-wrap">
-                        <span>{{ doc.basicInfo.subject }}</span>
-                        <span>{{ doc.basicInfo.grade }}</span>
-                        <span>{{ doc.basicInfo.type }}</span>
+                        <span v-if="doc.basicInfo.subject">{{ doc.basicInfo.subject }}</span>
+                        <span v-if="doc.basicInfo.grade">{{ doc.basicInfo.grade }}</span>
+                        <span v-if="doc.basicInfo.type">{{ doc.basicInfo.type }}</span>
                         <span v-if="doc.basicInfo.author">设计：{{ doc.basicInfo.author }}</span>
                     </div>
+                    <div style="margin-top:16px; border-top:2px double var(--c-jade); opacity:0.3;"></div>
                 </div>
 
-                <!-- 宏观内容 -->
-                <div class="mb-8 text-sm leading-relaxed">
-                    <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教学立意</h2>
-                    <p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.intent }}</p>
-                </div>
+                <div v-if="doc.macroDesign.intent" class="mb-8 text-sm leading-relaxed"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教学立意</h2><p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.intent }}</p></div>
+                <div v-if="doc.macroDesign.textbookAnalysis" class="mb-8 text-sm leading-relaxed"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教材分析</h2><p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.textbookAnalysis }}</p></div>
+                <div v-if="doc.macroDesign.studentAnalysis" class="mb-8 text-sm leading-relaxed"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">学情分析</h2><p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.studentAnalysis }}</p></div>
 
-                <div class="mb-8 text-sm leading-relaxed">
-                    <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教材分析</h2>
-                    <p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.textbookAnalysis }}</p>
-                </div>
-
-                <div class="mb-8 text-sm leading-relaxed">
-                    <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">学情分析</h2>
-                    <p class="indent-2 whitespace-pre-wrap">{{ doc.macroDesign.studentAnalysis }}</p>
-                </div>
-
-                <div class="mb-8 text-sm leading-relaxed">
+                <div v-if="hasObjectives" class="mb-8 text-sm leading-relaxed">
                     <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教学目标</h2>
-                    <ul>
-                        <li v-for="(obj, index) in doc.macroDesign.objectives" :key="obj.id" class="mb-1 flex">
-                            <span class="mr-2">{{ index + 1 }}.</span> <span>{{ obj.text }}</span>
-                        </li>
-                    </ul>
+                    <ul><li v-for="(obj, index) in validObjectives" :key="obj.id" class="mb-1 flex"><span class="mr-2">{{ index + 1 }}.</span><span>{{ obj.text }}</span></li></ul>
                 </div>
 
                 <div class="grid grid-cols-2 gap-8 mb-8 text-sm leading-relaxed">
-                    <div>
-                        <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">重点</h2>
-                        <p class="whitespace-pre-wrap">{{ doc.macroDesign.keyPoints }}</p>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">难点</h2>
-                        <p class="whitespace-pre-wrap">{{ doc.macroDesign.difficultPoints }}</p>
-                    </div>
+                    <div v-if="doc.macroDesign.keyPoints"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">重点</h2><p class="whitespace-pre-wrap">{{ doc.macroDesign.keyPoints }}</p></div>
+                    <div v-if="doc.macroDesign.difficultPoints"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">难点</h2><p class="whitespace-pre-wrap">{{ doc.macroDesign.difficultPoints }}</p></div>
                 </div>
 
-                <!-- 教学过程 -->
-                <div class="mb-8 text-sm leading-relaxed">
+                <!-- 教学过程（含时长） -->
+                <div v-if="doc.flow.length > 0" class="mb-8 text-sm leading-relaxed">
                     <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-6">教学过程</h2>
-                    
                     <div v-for="section in doc.flow" :key="section.id" class="mb-8">
-                        <h3 class="text-lg font-bold text-jade mb-3 border-b border-stone pb-1">{{ section.name }}</h3>
-                        
+                        <h3 class="text-lg font-bold text-jade mb-3 border-b border-stone pb-1">
+                            {{ section.name }}
+                            <span v-if="getSectionDuration(section) > 0" class="text-sm font-normal text-stone ml-2">（{{ getSectionDuration(section) }}分钟）</span>
+                        </h3>
                         <div v-for="step in section.steps" :key="step.id" class="mb-4">
-                            
                             <div v-if="step.type === 'activity'" class="mb-2">
                                 <div class="whitespace-pre-wrap" v-html="formatActivity(step.content)"></div>
                                 <div v-if="step.studentActivity" class="text-stone mt-1 text-sm">
                                     （学生活动：{{ step.studentActivity }}）
                                 </div>
                             </div>
-
                             <div v-if="step.type === 'material'" class="my-4 border border-stone bg-parchment p-4 rounded">
                                 <div class="font-bold text-xs text-jade mb-2 border-b border-stone pb-1 inline-block">材料 {{ materialIndexMap.get(step.id) }}</div>
-                                <div v-if="step.contentType === 'text'" class="whitespace-pre-wrap text-sm font-fangsong" :style="{ textAlign: step.align || 'left' }">
-                                    {{ step.content }}
-                                </div>
+                                <div v-if="step.contentType === 'text'" class="whitespace-pre-wrap text-sm font-fangsong" :style="{ textAlign: step.align || 'left' }">{{ step.content }}</div>
                                 <div v-else>
-                                    <img v-if="step.imageUrl" :src="step.imageUrl" class="max-h-48 object-contain m-auto">
+                                    <img v-if="step.imageUrl" :src="step.imageUrl" class="max-h-48 object-contain m-auto" :alt="step.imageCaption || '教学材料配图'">
                                     <p v-if="step.imageCaption" class="text-center text-xs text-stone mt-2">{{ step.imageCaption }}</p>
                                 </div>
                             </div>
                         </div>
-
                         <div v-if="section.intent" class="bg-terracotta-light border-l-4 border-terracotta p-3 rounded-r text-xs text-ink flex gap-2">
                             <span class="text-terracotta font-bold flex-shrink-0">设计意图：</span>
                             <span class="whitespace-pre-wrap">{{ section.intent }}</span>
@@ -473,370 +530,473 @@
                     </div>
                 </div>
 
-                <!-- 总结与反馈 -->
                 <div class="text-sm leading-relaxed">
-                    <div v-if="doc.summary.classSummary" class="mb-8 text-sm leading-relaxed">
-                        <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">课堂总结</h2>
-                        <p class="whitespace-pre-wrap">{{ doc.summary.classSummary }}</p>
-                    </div>
-
-                    <div v-if="doc.summary.boardDesign.type === 'text' ? doc.summary.boardDesign.content : doc.summary.boardDesign.imageUrl" class="mb-8 text-sm leading-relaxed">
+                    <div v-if="doc.summary.classSummary" class="mb-8"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">课堂总结</h2><p class="whitespace-pre-wrap">{{ doc.summary.classSummary }}</p></div>
+                    <div v-if="hasBoardDesign" class="mb-8">
                         <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">板书设计</h2>
                         <div class="border border-stone p-4 bg-parchment rounded">
                             <p v-if="doc.summary.boardDesign.type === 'text'" class="whitespace-pre-wrap font-sans text-center">{{ doc.summary.boardDesign.content }}</p>
-                            <img v-else :src="doc.summary.boardDesign.imageUrl" class="max-h-64 object-contain m-auto">
+                            <img v-else :src="doc.summary.boardDesign.imageUrl" class="max-h-64 object-contain m-auto" alt="板书设计">
                         </div>
                     </div>
-
-                    <div v-if="doc.summary.reflection" class="mb-8 text-sm leading-relaxed">
-                        <h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教学反思</h2>
-                        <p class="whitespace-pre-wrap">{{ doc.summary.reflection }}</p>
-                    </div>
+                    <div v-if="doc.summary.reflection" class="mb-8"><h2 class="text-xl font-bold border-l-4 border-jade pl-2 mb-3">教学反思</h2><p class="whitespace-pre-wrap">{{ doc.summary.reflection }}</p></div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- 清除确认弹窗 -->
-    <div v-if="showClearConfirm" class="modal-overlay no-print" @click.self="showClearConfirm = false">
+    <!-- 通用确认弹窗 -->
+    <div v-if="confirmState.show" class="modal-overlay no-print" @click.self="resolveConfirm(false)" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
         <div class="modal-box">
-            <h3 class="text-lg font-bold text-ink mb-3">确认清除</h3>
-            <p class="text-sm text-ink mb-6">此操作将清除所有已填写的内容，且无法恢复。确定要继续吗？</p>
+            <h3 id="confirm-dialog-title" class="text-lg font-bold text-ink mb-3">{{ confirmState.title }}</h3>
+            <p class="text-sm text-ink mb-6">{{ confirmState.message }}</p>
             <div class="flex gap-3 justify-end">
-                <button @click="showClearConfirm = false" class="px-4 py-2 text-sm border border-stone rounded hover:bg-stone/10 transition">取消</button>
-                <button @click="clearAll" class="px-4 py-2 text-sm bg-terracotta text-white rounded hover:bg-opacity-90 transition">确认清除</button>
+                <button @click="resolveConfirm(false)" class="px-4 py-2 text-sm border border-stone rounded hover:bg-stone/10 transition">取消</button>
+                <button @click="resolveConfirm(true)" class="px-4 py-2 text-sm bg-terracotta text-white rounded hover:bg-opacity-90 transition">确认</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const { createApp, ref, reactive, computed, watch, nextTick } = Vue;
+const { createApp, ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } = Vue;
 
-    const generateId = () => Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+/* ===== 常量 ===== */
+const STORAGE_KEY = 'teaching_design_draft';
+const AUTO_SAVE_INTERVAL = 60000;
+const MAX_STORAGE_SIZE = 4 * 1024 * 1024;
+const UNDO_DEBOUNCE = 300;
+const MAX_HISTORY = 50;
+const TAG_OPTIONS = ['讲述', '设问', '讲授', '过渡', 'PPT展示', '板书', '任务'];
 
-    const createDefaultDoc = () => ({
-        basicInfo: { title: '', subject: '', grade: '', author: '', type: '新授课' },
-        macroDesign: { 
-            intent: '', textbookAnalysis: '', studentAnalysis: '', 
-            objectives: [{ id: generateId(), text: '' }], 
-            keyPoints: '', difficultPoints: '' 
+const generateId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return Date.now().toString(36) + '-' + Math.random().toString(36).substr(2, 12);
+};
+
+const createStep = (type = 'activity') => ({
+    id: generateId(), type, content: '', studentActivity: '',
+    contentType: 'text', imageUrl: '', imageCaption: '', align: 'left', duration: 0
+});
+
+const EXAMPLE_DATA = {
+    basicInfo: { title: '从隋唐盛世到五代十国', subject: '历史', grade: '高一', author: '示例教师', type: '新授课' },
+    macroDesign: {
+        intent: '本课以隋唐王朝鼎盛局面的形成与统一多民族国家的发展为教学立意。试以大运河为主线，带领学生一起感受近四百年的王朝兴衰与更迭。',
+        textbookAnalysis: '本课是《中外历史纲要（上）》第二单元的第二课，主要内容有三目：隋朝的兴亡；唐朝的繁荣与民族交融；安史之乱、黄巢起义和五代十国。',
+        studentAnalysis: '学生通过初中历史课程的学习，对基本史实有了了解。存在的学习困难是：对隋唐王朝兴亡原因，民族交融重要作用的认识存在困难。',
+        objectives: [
+            { id: 'ex-obj-1', text: '用时间轴梳理隋朝和唐朝兴亡的基本史实，通过地图说出隋朝大运河和唐朝少数民族的时空分布。（时空观念）' },
+            { id: 'ex-obj-2', text: '通过材料分析隋唐兴亡的表现及客观原因，认识到社会的发展遵循着客观的规律。（历史解释、唯物史观）' },
+            { id: 'ex-obj-3', text: '梳理隋唐治理措施，概括唐朝处理民族关系的理念，加强对统一多民族国家发展的认识。（家国情怀）' }
+        ],
+        keyPoints: '通过材料分析隋唐兴亡的表现及客观原因，认识到社会的发展遵循着客观的规律。',
+        difficultPoints: '理解唐朝处理民族关系的理念，加强对民族团结和统一多民族封建国家的意识。'
+    },
+    flow: [
+        {
+            id: 'ex-sec-1', name: '一、课堂导入', intent: '通过皮日休的《汴河怀古》引导学生得出"此河"即汴河，是隋朝大运河的一部分。再借助大运河，导入新课。',
+            steps: [
+                { ...createStep('activity'), content: '【板书】从隋唐盛世到五代十国\n\n【讲述】同学们好！本课内容是《从隋唐盛世到五代十国》,起止时间从581年到979年。公元581年,北周外戚杨坚代周称帝,改国号隋,定都长安,杨坚就是隋文帝。589年,隋灭陈,结束了南北长期分裂的局面。文帝死后杨广即位,他就是为隋炀帝。隋炀帝自恃朝廷强盛,大兴土木,穷奢极欲。公元618年,隋朝灭亡。隋朝为什么和之前的秦朝一样,"其兴也勃,其亡也忽"呢？其中一个重要举措，就是开凿大运河。', studentActivity: '倾听，思考', duration: 3 },
+                { ...createStep('material'), content: '《汴河怀古》\n【唐】皮日休\n尽道隋亡为此河，至今千里赖通波。\n若无水殿龙舟事，共禹论功不较多。', align: 'center' },
+                { ...createStep('activity'), content: '【设问】大家知道诗中的"此河"指的是哪条河吗？', studentActivity: '回答：汴河/大运河', duration: 1 },
+                { ...createStep('activity'), content: '【讲述】是的，通称大运河。汴河和它所在的整条隋朝大运河在中国古代都发挥了重要的作用，影响并见证了数代王朝的兴衰。今天我们直接跟着大运河来走进本课的学习。', duration: 2 }
+            ]
         },
-        flow: [],
-        summary: { 
-            classSummary: '', 
-            boardDesign: { type: 'text', content: '', imageUrl: '' }, 
-            reflection: '' 
+        {
+            id: 'ex-sec-2', name: '二、运河开，系隋朝兴亡', intent: '借助地图与材料，让学生明白大运河的修筑有着重要的作用，分析隋亡原因，培养史料实证与唯物史观。',
+            steps: [
+                { ...createStep('activity'), content: '【设问】结合地图指出，大运河为什么要连接这些城市？', studentActivity: '思考，回答', duration: 2 },
+                { ...createStep('activity'), content: '【讲授】这些城市是政治、经济、军事中心。长安和洛阳是政治中心。余杭所在南方是经济中心。涿郡所在的北方地区是军事中心。需要通过大运河将它们连接起来。', duration: 3 },
+                { ...createStep('activity'), content: '【设问】结合书本与刚刚所讲，谈谈你对"共禹论功不较多"的理解。', studentActivity: '讨论，回答', duration: 3 },
+                { ...createStep('activity'), content: '【讲授】政治上，贯通东西、南北巩固隋王朝对全国的统治。经济上，形成贯通南北的运输网络，促进南北经济交流以及运河沿岸的城市发展。', duration: 2 },
+                { ...createStep('material'), content: '（大业元年）辛亥，发河南诸郡男女百余万，开通济渠，自西苑引谷、洛水达于河，自板渚引河通于淮。\n——魏征等《隋书》', align: 'right' },
+                { ...createStep('activity'), content: '【设问】结合"水殿龙舟事"与材料，思考隋朝灭亡的原因有哪些？', studentActivity: '思考、讨论、回答', duration: 3 },
+                { ...createStep('activity'), content: '【讲述】大兴土木、滥用民力，穷奢极欲。社会的发展遵循客观规律，隋炀帝滥用民力，极致奢靡，建设速度操之过急都已经决定了隋朝短命而亡的结局。', duration: 2 }
+            ]
         }
-    });
+    ],
+    summary: {
+        classSummary: '大运河将大唐帝国连成一个真正统一的整体，其淤塞和断流，又折射出唐朝的衰亡。正是奔腾不息的运河水，见证了王朝兴亡。',
+        boardDesign: { type: 'text', content: '从隋唐盛世到五代十国\n\n581 隋朝建立 - 开凿运河\n618 唐朝建立 - 轻徭薄赋、政治开明\n755 安史之乱 - 藩镇割据\n907 五代十国 - 黄巢起义', imageUrl: '' },
+        reflection: '本课以大运河为主线，逻辑清晰，但在时间把控上需注意材料阅读的时长。'
+    }
+};
 
-    const app = createApp({
-        setup() {
-            const doc = reactive(createDefaultDoc());
-            
-            const stepRefs = ref(new Map());
-            const setStepRef = (el, sectionId, stepId) => {
-                if (el) stepRefs.value.set(`${sectionId}-${stepId}`, el);
-                else stepRefs.value.delete(`${sectionId}-${stepId}`);
-            };
+const createDefaultDoc = () => ({
+    basicInfo: { title: '', subject: '', grade: '', author: '', type: '新授课' },
+    macroDesign: {
+        intent: '', textbookAnalysis: '', studentAnalysis: '',
+        objectives: [{ id: generateId(), text: '' }],
+        keyPoints: '', difficultPoints: ''
+    },
+    flow: [],
+    summary: {
+        classSummary: '',
+        boardDesign: { type: 'text', content: '', imageUrl: '' },
+        reflection: ''
+    }
+});
 
-            const showMobilePreview = ref(false);
-            const toggleMobilePreview = () => showMobilePreview.value = !showMobilePreview.value;
+/* ===== 安全的文档恢复（校验每个字段） ===== */
+const validateAndRestore = (target, parsed) => {
+    const def = createDefaultDoc();
 
-            const draftStatus = ref('');
-            const STORAGE_KEY = 'teaching_design_draft';
+    if (parsed.basicInfo && typeof parsed.basicInfo === 'object') {
+        ['title', 'subject', 'grade', 'author', 'type'].forEach(k => {
+            target.basicInfo[k] = typeof parsed.basicInfo[k] === 'string' ? parsed.basicInfo[k] : def.basicInfo[k];
+        });
+    } else { Object.assign(target.basicInfo, def.basicInfo); }
 
-            const showThemeMenu = ref(false);
-            const changeTheme = (theme) => {
-                if (theme === 'default') {
-                    document.documentElement.removeAttribute('data-theme');
-                } else {
-                    document.documentElement.setAttribute('data-theme', theme);
+    if (parsed.macroDesign && typeof parsed.macroDesign === 'object') {
+        ['intent', 'textbookAnalysis', 'studentAnalysis', 'keyPoints', 'difficultPoints'].forEach(k => {
+            target.macroDesign[k] = typeof parsed.macroDesign[k] === 'string' ? parsed.macroDesign[k] : '';
+        });
+        if (Array.isArray(parsed.macroDesign.objectives)) {
+            const v = parsed.macroDesign.objectives.filter(o => o && typeof o.text === 'string').map(o => ({ id: typeof o.id === 'string' ? o.id : generateId(), text: o.text }));
+            target.macroDesign.objectives = v.length > 0 ? v : [{ id: generateId(), text: '' }];
+        } else { target.macroDesign.objectives = [{ id: generateId(), text: '' }]; }
+    } else { Object.assign(target.macroDesign, def.macroDesign); }
+
+    if (Array.isArray(parsed.flow)) {
+        target.flow = parsed.flow.filter(s => s && typeof s.name === 'string').map(section => ({
+            id: typeof section.id === 'string' ? section.id : generateId(),
+            name: section.name,
+            intent: typeof section.intent === 'string' ? section.intent : '',
+            steps: Array.isArray(section.steps) ? section.steps.filter(st => st && typeof st === 'object').map(step => ({
+                id: typeof step.id === 'string' ? step.id : generateId(),
+                type: ['activity', 'material'].includes(step.type) ? step.type : 'activity',
+                content: typeof step.content === 'string' ? step.content : '',
+                studentActivity: typeof step.studentActivity === 'string' ? step.studentActivity : '',
+                contentType: ['text', 'image'].includes(step.contentType) ? step.contentType : 'text',
+                imageUrl: typeof step.imageUrl === 'string' ? step.imageUrl : '',
+                imageCaption: typeof step.imageCaption === 'string' ? step.imageCaption : '',
+                align: ['left', 'center', 'right'].includes(step.align) ? step.align : 'left',
+                duration: typeof step.duration === 'number' && step.duration >= 0 ? Math.min(step.duration, 999) : 0,
+            })) : []
+        }));
+    } else { target.flow = []; }
+
+    if (parsed.summary && typeof parsed.summary === 'object') {
+        target.summary.classSummary = typeof parsed.summary.classSummary === 'string' ? parsed.summary.classSummary : '';
+        target.summary.reflection = typeof parsed.summary.reflection === 'string' ? parsed.summary.reflection : '';
+        if (parsed.summary.boardDesign && typeof parsed.summary.boardDesign === 'object') {
+            target.summary.boardDesign.type = ['text', 'image'].includes(parsed.summary.boardDesign.type) ? parsed.summary.boardDesign.type : 'text';
+            target.summary.boardDesign.content = typeof parsed.summary.boardDesign.content === 'string' ? parsed.summary.boardDesign.content : '';
+            target.summary.boardDesign.imageUrl = typeof parsed.summary.boardDesign.imageUrl === 'string' ? parsed.summary.boardDesign.imageUrl : '';
+        } else { Object.assign(target.summary.boardDesign, def.summary.boardDesign); }
+    } else { Object.assign(target.summary, def.summary); }
+};
+
+const app = createApp({
+    setup() {
+        const doc = reactive(createDefaultDoc());
+        const stepRefs = ref(new Map());
+        const setStepRef = (el, sectionId, stepId) => {
+            const key = `${sectionId}-${stepId}`;
+            if (el) stepRefs.value.set(key, el); else stepRefs.value.delete(key);
+        };
+
+        const showMobilePreview = ref(false);
+        const toggleMobilePreview = () => { showMobilePreview.value = !showMobilePreview.value; };
+        const draftStatus = ref('');
+        const showThemeMenu = ref(false);
+        const themeMenuRef = ref(null);
+
+        /* ===== 确认弹窗 ===== */
+        const confirmState = reactive({ show: false, title: '', message: '', _resolve: null });
+        const openConfirm = (title, message) => new Promise(resolve => { confirmState.title = title; confirmState.message = message; confirmState._resolve = resolve; confirmState.show = true; });
+        const resolveConfirm = (result) => { confirmState.show = false; if (confirmState._resolve) { confirmState._resolve(result); confirmState._resolve = null; } };
+
+        /* ===== 主题 ===== */
+        const changeTheme = (theme) => {
+            if (theme === 'default') document.documentElement.removeAttribute('data-theme');
+            else document.documentElement.setAttribute('data-theme', theme);
+            showThemeMenu.value = false;
+            localStorage.setItem('teaching_design_theme', theme);
+        };
+        const savedTheme = localStorage.getItem('teaching_design_theme') || 'default';
+        if (savedTheme !== 'default') document.documentElement.setAttribute('data-theme', savedTheme);
+
+        /* ===== 暗色模式 ===== */
+        const isDarkMode = ref(localStorage.getItem('teaching_design_dark') === '1');
+        if (isDarkMode.value) document.documentElement.setAttribute('data-dark', 'true');
+        const toggleDarkMode = () => {
+            isDarkMode.value = !isDarkMode.value;
+            if (isDarkMode.value) document.documentElement.setAttribute('data-dark', 'true');
+            else document.documentElement.removeAttribute('data-dark');
+            localStorage.setItem('teaching_design_dark', isDarkMode.value ? '1' : '');
+        };
+
+        /* ===== 材料编号 ===== */
+        const materialIndexMap = computed(() => {
+            const map = new Map(); let c = 0;
+            for (const s of doc.flow) for (const st of s.steps) if (st.type === 'material') { c++; map.set(st.id, c); }
+            return map;
+        });
+        const getMaterialIndex = (sI, stI) => { const s = doc.flow[sI]; if (!s) return 0; const st = s.steps[stI]; return st ? materialIndexMap.value.get(st.id) || 0 : 0; };
+
+        /* ===== 预览计算 ===== */
+        const hasObjectives = computed(() => doc.macroDesign.objectives.some(o => o.text && o.text.trim()));
+        const validObjectives = computed(() => doc.macroDesign.objectives.filter(o => o.text && o.text.trim()));
+        const hasBoardDesign = computed(() => doc.summary.boardDesign.type === 'text' ? !!(doc.summary.boardDesign.content && doc.summary.boardDesign.content.trim()) : !!doc.summary.boardDesign.imageUrl);
+        const getSectionDuration = (section) => section.steps.reduce((sum, st) => sum + (Number(st.duration) || 0), 0);
+
+        /* ===== 撤销 / 重做 ===== */
+        const undoStack = ref([]);
+        const redoStack = ref([]);
+        let suppressWatcher = true;
+        let lastSavedSnapshot = '';
+        let undoTimer = null;
+
+        const flushPendingSnapshot = () => {
+            if (undoTimer) {
+                clearTimeout(undoTimer); undoTimer = null;
+                const snap = JSON.stringify(doc);
+                if (snap !== lastSavedSnapshot) {
+                    undoStack.value.push(lastSavedSnapshot);
+                    if (undoStack.value.length > MAX_HISTORY) undoStack.value.shift();
+                    redoStack.value = [];
+                    lastSavedSnapshot = snap;
                 }
-                showThemeMenu.value = false;
-                localStorage.setItem('teaching_design_theme', theme);
-            };
-
-            const savedTheme = localStorage.getItem('teaching_design_theme') || 'default';
-            if (savedTheme !== 'default') {
-                document.documentElement.setAttribute('data-theme', savedTheme);
             }
+        };
 
-            const materialIndexMap = computed(() => {
-                const map = new Map();
-                let count = 0;
-                for (const section of doc.flow) {
-                    for (const step of section.steps) {
-                        if (step.type === 'material') {
-                            count++;
-                            map.set(step.id, count);
-                        }
-                    }
+        const restoreFromParsed = (parsed) => {
+            suppressWatcher = true;
+            validateAndRestore(doc, parsed);
+            stepRefs.value.clear();
+            nextTick(() => { suppressWatcher = false; });
+        };
+
+        const undo = () => {
+            flushPendingSnapshot();
+            if (undoStack.value.length === 0) return;
+            redoStack.value.push(lastSavedSnapshot);
+            const prev = undoStack.value.pop();
+            restoreFromParsed(JSON.parse(prev));
+            lastSavedSnapshot = prev;
+            isDirty = false;
+            draftStatus.value = '已撤销';
+            setTimeout(() => { if (draftStatus.value === '已撤销') draftStatus.value = ''; }, 1500);
+        };
+
+        const redo = () => {
+            if (redoStack.value.length === 0) return;
+            undoStack.value.push(lastSavedSnapshot);
+            const next = redoStack.value.pop();
+            restoreFromParsed(JSON.parse(next));
+            lastSavedSnapshot = next;
+            isDirty = false;
+            draftStatus.value = '已重做';
+            setTimeout(() => { if (draftStatus.value === '已重做') draftStatus.value = ''; }, 1500);
+        };
+
+        const resetHistory = () => {
+            undoStack.value = []; redoStack.value = [];
+            clearTimeout(undoTimer); undoTimer = null;
+            lastSavedSnapshot = JSON.stringify(doc);
+        };
+
+        /* ===== 草稿自动保存 ===== */
+        let isDirty = false;
+        let saveInterval = null;
+
+        const saveDraft = () => {
+            try {
+                const data = JSON.stringify(doc);
+                if (data.length > MAX_STORAGE_SIZE) {
+                    draftStatus.value = '保存失败：内容过大'; setTimeout(() => { if (draftStatus.value.includes('保存失败')) draftStatus.value = ''; }, 5000); return;
                 }
-                return map;
-            });
-
-            const getMaterialIndex = (sIndex, stepIndex) => {
-                const section = doc.flow[sIndex];
-                if (!section) return 0;
-                const step = section.steps[stepIndex];
-                return step ? materialIndexMap.value.get(step.id) || 0 : 0;
-            };
-
-            // ---------- 草稿保存：每60秒自动保存一次 ----------
-            let isDirty = false;
-            let saveInterval = null;
-
-            const saveDraft = () => {
-                try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(doc));
-                    draftStatus.value = '草稿已保存 ' + new Date().toLocaleTimeString();
-                    setTimeout(() => { if (draftStatus.value.includes('已保存')) draftStatus.value = ''; }, 2000);
-                } catch (e) {
-                    draftStatus.value = '保存失败：' + e.message;
-                }
-            };
-
-            watch(doc, () => {
-                isDirty = true;
-            }, { deep: true });
-
-            saveInterval = setInterval(() => {
-                if (isDirty) {
-                    saveDraft();
-                    isDirty = false;
-                }
-            }, 60000);
-
-            window.addEventListener('beforeunload', () => {
-                if (isDirty) {
-                    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(doc)); } catch(e) {}
-                }
-            });
-
-            const loadDraft = () => {
-                try {
-                    const saved = localStorage.getItem(STORAGE_KEY);
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
-                        Object.assign(doc, parsed);
-                        draftStatus.value = '已恢复上次编辑的草稿';
-                        setTimeout(() => draftStatus.value = '', 3000);
-                        return true;
-                    }
-                } catch (e) {}
-                return false;
-            };
-
-            // ---------- 清除所有 ----------
-            const showClearConfirm = ref(false);
-            const clearAll = () => {
-                Object.assign(doc, createDefaultDoc());
-                addSection();
-                localStorage.removeItem(STORAGE_KEY);
-                showClearConfirm.value = false;
-                isDirty = false;
-                draftStatus.value = '已清除所有内容';
-                setTimeout(() => draftStatus.value = '', 3000);
-            };
-
-            // ---------- 教学目标操作 ----------
-            const addObjective = () => {
-                doc.macroDesign.objectives.push({ id: generateId(), text: '' });
-            };
-            const removeObjective = (index) => {
-                if (doc.macroDesign.objectives.length > 1) {
-                    doc.macroDesign.objectives.splice(index, 1);
-                } else {
-                    doc.macroDesign.objectives[0].text = '';
-                }
-            };
-
-            // ---------- 流程操作 ----------
-            const addSection = () => {
-                doc.flow.push({
-                    id: generateId(),
-                    name: `环节 ${doc.flow.length + 1}`,
-                    steps: [{ id: generateId(), type: 'activity', content: '', studentActivity: '' }],
-                    intent: ''
-                });
-            };
-            
-            const removeSection = (index) => {
-                if (confirm('确定删除整个环节吗？')) {
-                    doc.flow.splice(index, 1);
-                }
-            };
-
-            const addStep = (section, type) => {
-                section.steps.push({ 
-                    id: generateId(), type, content: '', studentActivity: '', 
-                    contentType: 'text', imageUrl: '', imageCaption: '', align: 'left' 
-                });
-            };
-
-            const removeStep = (section, stepIndex) => {
-                if (confirm('确定删除此步骤吗？')) {
-                    section.steps.splice(stepIndex, 1);
-                }
-            };
-
-            const insertMaterial = (steps, afterIndex) => {
-                steps.splice(afterIndex + 1, 0, { 
-                    id: generateId(), type: 'material', contentType: 'text', 
-                    content: '', imageUrl: '', imageCaption: '', align: 'left' 
-                });
-            };
-
-            const insertTag = (section, stepIndex, tag) => {
-                const step = section.steps[stepIndex];
-                if (!step || step.type !== 'activity') return;
-                const key = `${section.id}-${step.id}`;
-                const textarea = stepRefs.value.get(key);
-                if (!textarea) return;
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const insertText = `【${tag}】`;
-                const oldContent = step.content;
-                step.content = oldContent.substring(0, start) + insertText + oldContent.substring(end);
-                nextTick(() => {
-                    textarea.focus();
-                    textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
-                });
-            };
-
-            const formatActivity = (content) => {
-                if (!content) return '';
-                return content.replace(/【(讲述|设问|讲授|过渡|PPT展示|板书|任务)】/g, '<span class="text-terracotta font-bold">【$1】</span>');
-            };
-
-            // ---------- 图片上传（含压缩） ----------
-            const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            let width = img.width;
-                            let height = img.height;
-                            if (width > maxWidth) {
-                                height = (height * maxWidth) / width;
-                                width = maxWidth;
-                            }
-                            canvas.width = width;
-                            canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-                            resolve(canvas.toDataURL('image/jpeg', quality));
-                        };
-                        img.onerror = reject;
-                        img.src = e.target.result;
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            };
-
-            const handleImageUpload = async (event, step) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                if (!file.type.startsWith('image/')) { alert('请选择图片文件'); return; }
-                try {
-                    step.imageUrl = await compressImage(file);
-                } catch (e) {
-                    alert('图片处理失败：' + e.message);
-                } finally {
-                    event.target.value = '';
-                }
-            };
-
-            const handleBoardImageUpload = async (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                if (!file.type.startsWith('image/')) { alert('请选择图片文件'); return; }
-                try {
-                    doc.summary.boardDesign.imageUrl = await compressImage(file);
-                } catch (e) {
-                    alert('图片处理失败：' + e.message);
-                } finally {
-                    event.target.value = '';
-                }
-            };
-
-            const exportPDF = () => { window.print(); };
-
-            // ---------- 示例数据 ----------
-            const loadExample = () => {
-                if (!confirm("导入示例将覆盖当前内容，是否继续？")) return;
-                
-                doc.basicInfo = { title: '五千里大运河水，四百载王朝兴亡', subject: '历史', grade: '高一', author: '示例教师', type: '新授课' };
-                doc.macroDesign = {
-                    intent: '本课以隋唐王朝鼎盛局面的形成与统一多民族国家的发展为教学立意。试以大运河为主线，带领学生一起感受近四百年的王朝兴衰与更迭。',
-                    textbookAnalysis: '本课是《中外历史纲要（上）》第二单元的第二课，主要内容有三目：隋朝的兴亡；唐朝的繁荣与民族交融；安史之乱、黄巢起义和五代十国。',
-                    studentAnalysis: '学生通过初中历史课程的学习，对基本史实有了了解。存在的学习困难是：对隋唐王朝兴亡原因，民族交融重要作用的认识存在困难。',
-                    objectives: [
-                        { id: generateId(), text: '用时间轴梳理隋朝和唐朝兴亡的基本史实，通过地图说出隋朝大运河和唐朝少数民族的时空分布。（时空观念）' },
-                        { id: generateId(), text: '通过材料分析隋唐兴亡的表现及客观原因，认识到社会的发展遵循着客观的规律。（历史解释、唯物史观）' },
-                        { id: generateId(), text: '梳理隋唐治理措施，概括唐朝处理民族关系的理念，加强对统一多民族国家发展的认识。（家国情怀）' }
-                    ],
-                    keyPoints: '通过材料分析隋唐兴亡的表现及客观原因，认识到社会的发展遵循着客观的规律。',
-                    difficultPoints: '理解唐朝处理民族关系的理念，加强对民族团结和统一多民族封建国家的意识。'
-                };
-                
-                doc.flow = [
-                    {
-                        id: generateId(),
-                        name: '一、课堂导入',
-                        steps: [
-                            { id: generateId(), type: 'activity', content: '【板书】从隋唐盛世到五代十国\n\n【讲述】同学们好！本课内容是《从隋唐盛世到五代十国》,起止时间从581年到979年。公元581年,北周外戚杨坚代周称帝,改国号隋,定都长安,杨坚就是隋文帝。589年,隋灭陈,结束了南北长期分裂的局面。文帝死后杨广即位,他就是为隋炀帝。隋炀帝自恃朝廷强盛,大兴土木,穷奢极欲。公元618年,隋朝灭亡。隋朝为什么和之前的秦朝一样,"其兴也勃,其亡也忽"呢？其中一个重要举措，就是开凿大运河。', studentActivity: '倾听，思考' },
-                            { id: generateId(), type: 'material', contentType: 'text', content: '《汴河怀古》\n【唐】皮日休\n尽道隋亡为此河，至今千里赖通波。\n若无水殿龙舟事，共禹论功不较多。', imageUrl: '', imageCaption: '', align: 'center' },
-                            { id: generateId(), type: 'activity', content: '【设问】大家知道诗中的"此河"指的是哪条河吗？', studentActivity: '回答：汴河/大运河' },
-                            { id: generateId(), type: 'activity', content: '【讲述】是的，通称大运河。汴河和它所在的整条隋朝大运河在中国古代都发挥了重要的作用，影响并见证了数代王朝的兴衰。今天我们直接跟着大运河来走进本课的学习。', studentActivity: '' }
-                        ],
-                        intent: '通过皮日休的《汴河怀古》引导学生得出"此河"即汴河，是隋朝大运河的一部分。再借助大运河，导入新课。'
-                    },
-                    {
-                        id: generateId(),
-                        name: '二、运河开，系隋朝兴亡',
-                        steps: [
-                            { id: generateId(), type: 'activity', content: '【设问】结合地图指出，大运河为什么要连接这些城市？', studentActivity: '思考，回答' },
-                            { id: generateId(), type: 'activity', content: '【讲授】这些城市是政治、经济、军事中心。长安和洛阳是政治中心。余杭所在南方是经济中心。涿郡所在的北方地区是军事中心。需要通过大运河将它们连接起来。', studentActivity: '' },
-                            { id: generateId(), type: 'activity', content: '【设问】结合书本与刚刚所讲，谈谈你对"共禹论功不较多"的理解。', studentActivity: '讨论，回答' },
-                            { id: generateId(), type: 'activity', content: '【讲授】政治上，贯通东西、南北巩固隋王朝对全国的统治。经济上，形成贯通南北的运输网络，促进南北经济交流以及运河沿岸的城市发展。', studentActivity: '' },
-                            { id: generateId(), type: 'material', contentType: 'text', content: '（大业元年）辛亥，发河南诸郡男女百余万，开通济渠，自西苑引谷、洛水达于河，自板渚引河通于淮。\n——魏征等《隋书》', imageUrl: '', imageCaption: '', align: 'right' },
-                            { id: generateId(), type: 'activity', content: '【设问】结合"水殿龙舟事"与材料，思考隋朝灭亡的原因有哪些？', studentActivity: '思考、讨论、回答' },
-                            { id: generateId(), type: 'activity', content: '【讲述】大兴土木、滥用民力，穷奢极欲。社会的发展遵循客观规律，隋炀帝滥用民力，极致奢靡，建设速度操之过急都已经决定了隋朝短命而亡的结局。', studentActivity: '' }
-                        ],
-                        intent: '借助地图与材料，让学生明白大运河的修筑有着重要的作用，分析隋亡原因，培养史料实证与唯物史观。'
-                    }
-                ];
-                
-                doc.summary = {
-                    classSummary: '大运河将大唐帝国连成一个真正统一的整体，其淤塞和断流，又折射出唐朝的衰亡。正是奔腾不息的运河水，见证了王朝兴亡。',
-                    boardDesign: { type: 'text', content: '从隋唐盛世到五代十国\n\n581 隋朝建立 - 开凿运河\n618 唐朝建立 - 轻徭薄赋、政治开明\n755 安史之乱 - 藩镇割据\n907 五代十国 - 黄巢起义', imageUrl: '' },
-                    reflection: '本课以大运河为主线，逻辑清晰，但在时间把控上需注意材料阅读的时长。'
-                };
-            };
-
-            const initialized = loadDraft();
-            if (!initialized) {
-                addSection();
+                localStorage.setItem(STORAGE_KEY, data);
+                draftStatus.value = '草稿已保存 ' + new Date().toLocaleTimeString();
+                setTimeout(() => { if (draftStatus.value.includes('已保存')) draftStatus.value = ''; }, 2000);
+            } catch (e) {
+                draftStatus.value = e.name === 'QuotaExceededError' ? '保存失败：存储空间已满' : '保存失败：' + e.message;
+                setTimeout(() => { if (draftStatus.value.includes('保存失败')) draftStatus.value = ''; }, 5000);
             }
+        };
 
-            return {
-                doc, showMobilePreview, toggleMobilePreview, draftStatus,
-                materialIndexMap, stepRefs, setStepRef, getMaterialIndex,
-                addObjective, removeObjective, addSection, removeSection,
-                addStep, removeStep, insertMaterial, insertTag, formatActivity,
-                handleImageUpload, handleBoardImageUpload, exportPDF, loadExample,
-                showThemeMenu, changeTheme, showClearConfirm, clearAll
+        watch(doc, () => {
+            if (suppressWatcher) return;
+            isDirty = true;
+            clearTimeout(undoTimer);
+            undoTimer = setTimeout(() => {
+                const snap = JSON.stringify(doc);
+                if (snap !== lastSavedSnapshot) {
+                    undoStack.value.push(lastSavedSnapshot);
+                    if (undoStack.value.length > MAX_HISTORY) undoStack.value.shift();
+                    redoStack.value = [];
+                    lastSavedSnapshot = snap;
+                }
+            }, UNDO_DEBOUNCE);
+        }, { deep: true });
+
+        saveInterval = setInterval(() => { if (isDirty) { saveDraft(); isDirty = false; } }, AUTO_SAVE_INTERVAL);
+
+        const beforeunloadHandler = () => { flushPendingSnapshot(); if (isDirty) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(doc)); } catch(e) {} } };
+        window.addEventListener('beforeunload', beforeunloadHandler);
+
+        const loadDraft = () => {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (!saved) return false;
+                const parsed = JSON.parse(saved);
+                if (!parsed || typeof parsed !== 'object') return false;
+                suppressWatcher = true;
+                validateAndRestore(doc, parsed);
+                return true;
+            } catch (e) { console.warn('草稿加载失败:', e); return false; }
+        };
+
+        /* ===== 快捷键 ===== */
+        const handleKeydown = (e) => {
+            const mod = e.ctrlKey || e.metaKey;
+            if (confirmState.show) { if (e.key === 'Escape') { resolveConfirm(false); } return; }
+            if (e.key === 'Escape') { if (showThemeMenu.value) showThemeMenu.value = false; return; }
+            if (mod && e.key === 's') { e.preventDefault(); flushPendingSnapshot(); saveDraft(); return; }
+            const inInput = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
+            if (inInput) return;
+            if (mod && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+            if (mod && e.key === 'z' && e.shiftKey) { e.preventDefault(); redo(); }
+            if (mod && e.key === 'y') { e.preventDefault(); redo(); }
+        };
+
+        const handleDocumentClick = (e) => {
+            if (showThemeMenu.value && themeMenuRef.value && !themeMenuRef.value.contains(e.target)) showThemeMenu.value = false;
+        };
+
+        onMounted(() => { document.addEventListener('keydown', handleKeydown); document.addEventListener('click', handleDocumentClick); });
+        onUnmounted(() => { clearInterval(saveInterval); clearTimeout(undoTimer); window.removeEventListener('beforeunload', beforeunloadHandler); document.removeEventListener('keydown', handleKeydown); document.removeEventListener('click', handleDocumentClick); });
+
+        /* ===== 清除 ===== */
+        const handleClearAll = async () => {
+            if (!(await openConfirm('确认清除', '此操作将清除所有已填写的内容，且无法恢复。确定要继续吗？'))) return;
+            suppressWatcher = true;
+            Object.assign(doc, createDefaultDoc());
+            addSection();
+            localStorage.removeItem(STORAGE_KEY);
+            isDirty = false; stepRefs.value.clear();
+            nextTick(() => { resetHistory(); suppressWatcher = false; });
+            draftStatus.value = '已清除所有内容'; setTimeout(() => draftStatus.value = '', 3000);
+        };
+
+        /* ===== 目标 ===== */
+        const addObjective = () => doc.macroDesign.objectives.push({ id: generateId(), text: '' });
+        const removeObjective = (i) => { if (doc.macroDesign.objectives.length > 1) doc.macroDesign.objectives.splice(i, 1); else doc.macroDesign.objectives[0].text = ''; };
+
+        /* ===== 流程 ===== */
+        const addSection = () => { doc.flow.push({ id: generateId(), name: `环节 ${doc.flow.length + 1}`, steps: [createStep()], intent: '' }); };
+        const removeSection = async (i) => { if (await openConfirm('确认删除', '确定删除整个环节吗？')) { const s = doc.flow[i]; if (s) s.steps.forEach(st => stepRefs.value.delete(`${s.id}-${st.id}`)); doc.flow.splice(i, 1); } };
+        const addStep = (section, type) => { section.steps.push(createStep(type)); };
+        const removeStep = async (section, i) => { if (await openConfirm('确认删除', '确定删除此步骤吗？')) { const st = section.steps[i]; if (st) stepRefs.value.delete(`${section.id}-${st.id}`); section.steps.splice(i, 1); } };
+        const insertMaterial = (steps, afterI) => { steps.splice(afterI + 1, 0, createStep('material')); };
+        const insertTag = (section, stepI, tag) => {
+            const step = section.steps[stepI]; if (!step || step.type !== 'activity') return;
+            const el = stepRefs.value.get(`${section.id}-${step.id}`); if (!el) return;
+            const s = el.selectionStart, e = el.selectionEnd, ins = `【${tag}】`;
+            step.content = step.content.substring(0, s) + ins + step.content.substring(e);
+            nextTick(() => { el.focus(); el.selectionStart = el.selectionEnd = s + ins.length; });
+        };
+
+        /* ===== XSS 防护 ===== */
+        const formatActivity = (content) => {
+            if (!content) return '';
+            let safe = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            return safe.replace(/【(讲述|设问|讲授|过渡|PPT展示|板书|任务)】/g, '<span class="text-terracotta font-bold">【$1】</span>');
+        };
+
+        /* ===== 图片 ===== */
+        const compressImage = (file, maxW = 1200, q = 0.8) => new Promise((resolve, reject) => {
+            if (!file.type.startsWith('image/')) { reject(new Error('请选择图片文件')); return; }
+            const r = new FileReader();
+            r.onload = (e) => { const img = new Image(); img.onload = () => { const c = document.createElement('canvas'); let w = img.width, h = img.height; if (w > maxW) { h = h * maxW / w; w = maxW; } c.width = w; c.height = h; c.getContext('2d').drawImage(img, 0, 0, w, h); resolve(c.toDataURL('image/jpeg', q)); }; img.onerror = () => reject(new Error('图片加载失败')); img.src = e.target.result; };
+            r.onerror = () => reject(new Error('文件读取失败')); r.readAsDataURL(file);
+        });
+        const handleImageUpload = async (ev, step) => { const f = ev.target.files[0]; if (!f) return; try { step.imageUrl = await compressImage(f); } catch (e) { alert('图片处理失败：' + e.message); } finally { ev.target.value = ''; } };
+        const handleBoardImageUpload = async (ev) => { const f = ev.target.files[0]; if (!f) return; try { doc.summary.boardDesign.imageUrl = await compressImage(f); } catch (e) { alert('图片处理失败：' + e.message); } finally { ev.target.value = ''; } };
+
+        /* ===== 剪贴板粘贴图片 ===== */
+        const handlePasteImage = async (ev, step) => {
+            const items = ev.clipboardData?.items; if (!items) return;
+            for (const item of items) { if (item.type.startsWith('image/')) { ev.preventDefault(); const f = item.getAsFile(); if (f) { try { step.imageUrl = await compressImage(f); } catch (e) { alert('图片处理失败：' + e.message); } } break; } }
+        };
+        const handlePasteBoardImage = async (ev) => {
+            const items = ev.clipboardData?.items; if (!items) return;
+            for (const item of items) { if (item.type.startsWith('image/')) { ev.preventDefault(); const f = item.getAsFile(); if (f) { try { doc.summary.boardDesign.imageUrl = await compressImage(f); } catch (e) { alert('图片处理失败：' + e.message); } } break; } }
+        };
+
+        const exportPDF = () => window.print();
+
+        /* ===== JSON 导入 / 导出 ===== */
+        const sanitizeFilename = (name) => name.replace(/[<>:"/\\|?*]/g, '_').substring(0, 80) || '教学设计';
+
+        const exportJSON = () => {
+            flushPendingSnapshot();
+            const data = JSON.stringify(doc, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = sanitizeFilename(doc.basicInfo.title || '教学设计') + '.json';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            draftStatus.value = '已导出 JSON 文件'; setTimeout(() => draftStatus.value = '', 2000);
+        };
+
+        const importJSON = () => {
+            const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+            input.onchange = async (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                try {
+                    const text = await file.text();
+                    const parsed = JSON.parse(text);
+                    if (!parsed || typeof parsed !== 'object') throw new Error('格式不正确');
+                    if (doc.basicInfo.title || doc.flow.length > 0) {
+                        if (!(await openConfirm('导入确认', '导入将覆盖当前所有内容，是否继续？'))) return;
+                    }
+                    suppressWatcher = true;
+                    validateAndRestore(doc, parsed);
+                    stepRefs.value.clear(); isDirty = true;
+                    nextTick(() => { resetHistory(); suppressWatcher = false; saveDraft(); });
+                    draftStatus.value = '已导入 JSON 文件'; setTimeout(() => draftStatus.value = '', 2000);
+                } catch (err) { alert('导入失败：' + (err.message || '文件格式不正确')); }
             };
-        }
-    });
+            input.click();
+        };
 
-    app.component('draggable', vuedraggable);
-    app.mount('#app');
+        /* ===== 示例数据 ===== */
+        const loadExample = async () => {
+            if (!(await openConfirm('导入示例', '导入示例将覆盖当前所有内容，是否继续？'))) return;
+            suppressWatcher = true;
+            validateAndRestore(doc, EXAMPLE_DATA);
+            stepRefs.value.clear(); isDirty = true;
+            nextTick(() => { resetHistory(); suppressWatcher = false; saveDraft(); });
+        };
+
+        /* ===== 初始化 ===== */
+        const initialized = loadDraft();
+        if (!initialized) { suppressWatcher = true; addSection(); }
+        nextTick(() => { lastSavedSnapshot = JSON.stringify(doc); suppressWatcher = false; });
+
+        return {
+            doc, showMobilePreview, toggleMobilePreview, draftStatus,
+            materialIndexMap, stepRefs, setStepRef, getMaterialIndex, getSectionDuration,
+            addObjective, removeObjective, addSection, removeSection,
+            addStep, removeStep, insertMaterial, insertTag, formatActivity,
+            handleImageUpload, handleBoardImageUpload, handlePasteImage, handlePasteBoardImage,
+            exportPDF, exportJSON, importJSON, loadExample,
+            showThemeMenu, themeMenuRef, changeTheme,
+            isDarkMode, toggleDarkMode,
+            handleClearAll,
+            TAG_OPTIONS,
+            confirmState, openConfirm, resolveConfirm,
+            hasObjectives, validObjectives, hasBoardDesign,
+            undoStack, redoStack, undo, redo,
+        };
+    }
+});
+
+app.component('draggable', vuedraggable);
+app.mount('#app');
 </script>
 </body>
 </html>
